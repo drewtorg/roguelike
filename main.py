@@ -1,51 +1,76 @@
 import libtcodpy as libtcod
+from tile import Tile
 from object import Object
+from rect import Rect
+from map import Map
 
-SCREEN_WIDTH = 80;
-SCREEN_HEIGHT = 50
-LIMIT_FPS = 20
+class Game:
 
-libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Libtcod Tutorial', False)
-con = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
+	def __init__(self):
+		self.SCREEN_WIDTH = 80
+		self.SCREEN_HEIGHT = 50
+		self.LIMIT_FPS = 20
+		MAP_WIDTH = 80
+		MAP_HEIGHT = 45
 
-player = Object(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, '@', libtcod.white, con)
-npc = Object(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, '@', libtcod.yellow, con)
-objects = [npc, player]
 
-def handle_keys():
-	global playerx, playery
+		self.con = libtcod.console_new(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+		self.player = Object(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2, '@', libtcod.white, self.con)
+		self.player.x = 25
+		self.player.y = 23
+		self.objects = [self.player]
+		self.map = Map(MAP_WIDTH, MAP_HEIGHT)
 
-	key = libtcod.console_wait_for_keypress(True)
+	def render_all(self):
+		for y in range(self.map.height):
+			for x in range(self.map.width):
+				wall = self.map[x][y].block_sight
+				if wall:
+					libtcod.console_put_char_ex(self.con, x, y, '#', libtcod.white, libtcod.black)
+				else:
+					libtcod.console_put_char_ex(self.con, x, y, '.', libtcod.white, libtcod.black)
 
-	if key.vk == libtcod.KEY_ESCAPE:
-		return True
+		for object in self.objects:
+			object.draw()
 
-	if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-		player.move(0, -1)
+		libtcod.console_blit(self.con, 0, 0, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 0, 0, 0)
 
-	elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-		player.move(0, 1)
+	def handle_keys(self):
 
-	elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-		player.move(-1, 0)
+		key = libtcod.console_wait_for_keypress(True)
 
-	elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-		player.move(1, 0)
+		if key.vk == libtcod.KEY_ESCAPE:
+			return True
 
-while not libtcod.console_is_window_closed():
-	libtcod.console_set_default_foreground(0, libtcod.white)
+		if libtcod.console_is_key_pressed(libtcod.KEY_UP):
+			self.player.move(0, -1, self.map)
 
-	for obj in objects:
-		obj.draw()
+		elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
+			self.player.move(0, 1, self.map)
 
-	libtcod.console_blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0)
+		elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
+			self.player.move(-1, 0, self.map)
 
-	libtcod.console_flush()
+		elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
+			self.player.move(1, 0, self.map)
 
-	for obj in objects:
-		obj.clear()
+	def run(self):
+		libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+		libtcod.console_init_root(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 'Libtcod Tutorial', False)
 
-	exit = handle_keys()
-	if exit:
-		break
+		while not libtcod.console_is_window_closed():
+			libtcod.console_set_default_foreground(0, libtcod.white)
+
+			self.render_all()	
+
+			libtcod.console_flush()
+
+			for obj in self.objects:
+				obj.clear()
+
+			exit = self.handle_keys()
+			if exit:
+				break
+
+game = Game()
+game.run()
