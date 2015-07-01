@@ -16,10 +16,10 @@ class Game:
 
 		self.con = libtcod.console_new(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
 		self.player = Object(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2, '@', libtcod.white, self.con)
-		self.player.x = 25
-		self.player.y = 23
-		self.objects = [self.player]
 		self.map = Map(MAP_WIDTH, MAP_HEIGHT)
+		self.player.x = self.map.originX
+		self.player.y = self.map.originY
+		self.objects = [self.player]
 
 	def render_all(self):
 		for y in range(self.map.height):
