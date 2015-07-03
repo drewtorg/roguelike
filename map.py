@@ -2,6 +2,7 @@ from tile import Tile
 from rect import Rect
 import libtcodpy as libtcod
 from object import Object
+import components as Components
 
 class Map:
 
@@ -16,7 +17,6 @@ class Map:
 	COLOR_UNLIT = libtcod.dark_grey
 
 	def __init__(self, width, height, con):
-
 		self.height = height
 		self.width = width
 		self.objects = []
@@ -84,9 +84,15 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				if libtcod.random_get_int(0, 0, 100) < 80:
-					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self.con, True)
+					fighter_component = Components.Fighter(hp=10, defense=0, power=3)
+					ai_component = Components.BasicMonster()
+					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self.con, self,
+						blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
-					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self.con, True)
+					fighter_component = Components.Fighter(hp=16, defense=1, power=4)
+					ai_component = Components.BasicMonster()
+					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self.con, self,
+						blocks=True, fighter=fighter_component, ai=ai_component)
 
 				self.objects.append(monster)
 
@@ -149,6 +155,6 @@ class Map:
 						libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
 		for object in self.objects:
-			object.draw(self.fov_map)
+			object.draw()
 
 		libtcod.console_blit(self.con, 0, 0, self.width, self.height, 0, 0, 0)
