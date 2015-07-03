@@ -9,6 +9,11 @@ class Map:
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
 	MAX_ROOMS = 30
+	FOV_ALGO = 0
+	FOV_LIGHT_WALLS = True
+	TORCH_RADIUS = 5
+	COLOR_LIT = libtcod.lighter_grey
+	COLOR_UNLIT = libtcod.dark_grey
 
 	def __init__(self, width, height, con):
 
@@ -17,6 +22,8 @@ class Map:
 		self.objects = []
 		self.con = con
 		self.make_map()
+		self.fov_recompute = True
+		self.fov_map = self.make_fov_map()
 
 	def __getitem__(self, key):
 		return self.map[key]
@@ -52,8 +59,7 @@ class Map:
 				(new_x, new_y) = new_room.center()
 
 				if num_rooms == 0:
-					self.originX = new_x
-					self.originY = new_y
+					self.origin = (new_x, new_y)
 
 				else:
 					#connect our room to the previous room
@@ -109,3 +115,40 @@ class Map:
 				return True
 
 		return False
+
+	def make_fov_map(self):
+		fov_map = libtcod.map_new(self.width, self.height)
+		for y in range(self.height):
+			for x in range(self.width):
+				libtcod.map_set_properties(fov_map, x, y, not self.map[x][y].block_sight, not self.map[x][y].blocked)
+		return fov_map
+
+	def recompute_fov(self):
+		if self.fov_recompute:
+			self.fov_recompute = False
+			libtcod.map_compute_fov(self.fov_map, self.player.x, self.player.y, Map.TORCH_RADIUS, Map.FOV_LIGHT_WALLS, Map.FOV_ALGO)
+
+	def render_all(self):
+		self.recompute_fov()
+
+		for y in range(self.height):
+			for x in range(self.width):
+				visible = libtcod.map_is_in_fov(self.fov_map, x, y)
+				wall = self.map[x][y].block_sight
+				if not visible:
+					if self.map[x][y].explored:
+						if wall:
+							libtcod.console_put_char_ex(self.con, x, y, '#', Map.COLOR_UNLIT, libtcod.black)
+						else:
+							libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_UNLIT, libtcod.black)
+				else:
+					self.map[x][y].explored = True
+					if wall:
+						libtcod.console_put_char_ex(self.con, x, y, '#', Map.COLOR_LIT, libtcod.black)
+					else:
+						libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_LIT, libtcod.black)
+
+		for object in self.objects:
+			object.draw(self.fov_map)
+
+		libtcod.console_blit(self.con, 0, 0, self.width, self.height, 0, 0, 0)
