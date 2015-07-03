@@ -5,11 +5,12 @@ from object import Object
 
 class Map:
 
+	MAX_ROOM_MONSTERS = 3
+	ROOM_MIN_SIZE = 6
+	ROOM_MAX_SIZE = 10
+	MAX_ROOMS = 30
+
 	def __init__(self, width, height, con):
-		self.MAX_ROOM_MONSTERS = 3
-		self.ROOM_MIN_SIZE = 6
-		self.ROOM_MAX_SIZE = 10
-		self.MAX_ROOMS = 30
 
 		self.height = height
 		self.width = width
@@ -28,10 +29,10 @@ class Map:
 		rooms = []
 		num_rooms = 0
 
-		for r in range(self.MAX_ROOMS):
+		for r in range(Map.MAX_ROOMS):
 			#make a random room
-			w = libtcod.random_get_int(0, self.ROOM_MIN_SIZE, self.ROOM_MAX_SIZE)
-			h = libtcod.random_get_int(0, self.ROOM_MIN_SIZE, self.ROOM_MAX_SIZE)
+			w = libtcod.random_get_int(0, Map.ROOM_MIN_SIZE, Map.ROOM_MAX_SIZE)
+			h = libtcod.random_get_int(0, Map.ROOM_MIN_SIZE, Map.ROOM_MAX_SIZE)
 
 			x = libtcod.random_get_int(0, 0, self.width - w - 1)
 			y = libtcod.random_get_int(0, 0, self.height - h - 1)
@@ -69,7 +70,7 @@ class Map:
 				num_rooms+= 1
 
 	def place_objects(self, room):
-		num_monsters = libtcod.random_get_int(0, 0, self.MAX_ROOM_MONSTERS)
+		num_monsters = libtcod.random_get_int(0, 0, Map.MAX_ROOM_MONSTERS)
 
 		for i in range(num_monsters):
 			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)

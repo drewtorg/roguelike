@@ -11,7 +11,6 @@ class Object:
 		self.blocks = blocks
 
 	def move_or_attack(self, dx, dy, map):
-
 		x = self.x + dx
 		y = self.y + dy
 
@@ -35,6 +34,3 @@ class Object:
 		if libtcod.map_is_in_fov(fov_map, self.x, self.y):
 			libtcod.console_set_default_foreground(self.con, self.color)
 			libtcod.console_put_char(self.con, self.x, self.y, self.char, libtcod.BKGND_NONE)
-
-	def clear(self):
-		libtcod.console_put_char_ex(self.con, self.x, self.y, '.', libtcod.lightest_grey, libtcod.black)

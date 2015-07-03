@@ -6,24 +6,25 @@ from map import Map
 
 class Game:
 
+	SCREEN_WIDTH = 80
+	SCREEN_HEIGHT = 50
+	LIMIT_FPS = 20
+	MAP_WIDTH = 80
+	MAP_HEIGHT = 45
+	FOV_ALGO = 0
+	FOV_LIGHT_WALLS = True
+	TORCH_RADIUS = 5
+	COLOR_LIT = libtcod.lighter_grey
+	COLOR_UNLIT = libtcod.dark_grey
+	
 	def __init__(self):
-		self.SCREEN_WIDTH = 80
-		self.SCREEN_HEIGHT = 50
-		self.LIMIT_FPS = 20
-		self.MAP_WIDTH = 80
-		self.MAP_HEIGHT = 45
-		self.FOV_ALGO = 0
-		self.FOV_LIGHT_WALLS = True
-		self.TORCH_RADIUS = 5
-		self.LIT = libtcod.lighter_grey
-		self.UNLIT = libtcod.dark_grey
 
 		self.game_state = 'playing'
 		player_action = None
 
-		self.con = libtcod.console_new(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
-		self.player = Object(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2, '@', 'Drew', libtcod.pink, self.con, True)
-		self.map = Map(self.MAP_WIDTH, self.MAP_HEIGHT, self.con)
+		self.con = libtcod.console_new(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT)
+		self.player = Object(Game.SCREEN_WIDTH / 2, Game.SCREEN_HEIGHT / 2, '@', 'Drew', libtcod.pink, self.con, True)
+		self.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT, self.con)
 		self.player.x = self.map.originX
 		self.player.y = self.map.originY
 		self.objects = self.map.objects
@@ -33,19 +34,19 @@ class Game:
 		self.fov_map = self.make_fov_map()
 
 		libtcod.console_set_custom_font('terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-		libtcod.console_init_root(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 'Libtcod Tutorial', False)
+		libtcod.console_init_root(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 'Libtcod Tutorial', False)
 
 	def make_fov_map(self):
-		fov_map = libtcod.map_new(self.MAP_WIDTH, self.MAP_HEIGHT)
-		for y in range(self.MAP_HEIGHT):
-			for x in range(self.MAP_WIDTH):
+		fov_map = libtcod.map_new(Game.MAP_WIDTH, Game.MAP_HEIGHT)
+		for y in range(Game.MAP_HEIGHT):
+			for x in range(Game.MAP_WIDTH):
 				libtcod.map_set_properties(fov_map, x, y, not self.map[x][y].block_sight, not self.map[x][y].blocked)
 		return fov_map
 
 	def recompute_fov(self):
 		if self.fov_recompute:
 			self.fov_recompute = False
-			libtcod.map_compute_fov(self.fov_map, self.player.x, self.player.y, self.TORCH_RADIUS, self.FOV_LIGHT_WALLS, self.FOV_ALGO)
+			libtcod.map_compute_fov(self.fov_map, self.player.x, self.player.y, Game.TORCH_RADIUS, Game.FOV_LIGHT_WALLS, Game.FOV_ALGO)
 
 	def render_all(self):
 		self.recompute_fov()
@@ -57,20 +58,20 @@ class Game:
 				if not visible:
 					if self.map[x][y].explored:
 						if wall:
-							libtcod.console_put_char_ex(self.con, x, y, '#', self.UNLIT, libtcod.black)
+							libtcod.console_put_char_ex(self.con, x, y, '#', Game.COLOR_UNLIT, libtcod.black)
 						else:
-							libtcod.console_put_char_ex(self.con, x, y, '.', self.UNLIT, libtcod.black)
+							libtcod.console_put_char_ex(self.con, x, y, '.', Game.COLOR_UNLIT, libtcod.black)
 				else:
 					self.map[x][y].explored = True
 					if wall:
-						libtcod.console_put_char_ex(self.con, x, y, '#', self.LIT, libtcod.black)
+						libtcod.console_put_char_ex(self.con, x, y, '#', Game.COLOR_LIT, libtcod.black)
 					else:
-						libtcod.console_put_char_ex(self.con, x, y, '.', self.LIT, libtcod.black)
+						libtcod.console_put_char_ex(self.con, x, y, '.', Game.COLOR_LIT, libtcod.black)
 
 		for object in self.objects:
 			object.draw(self.fov_map)
 
-		libtcod.console_blit(self.con, 0, 0, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 0, 0, 0)
+		libtcod.console_blit(self.con, 0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 0, 0, 0)
 
 	def handle_keys(self):
 		if self.game_state == 'playing':
@@ -100,22 +101,19 @@ class Game:
 
 	def run(self):
 		while not libtcod.console_is_window_closed():
-			libtcod.console_set_default_foreground(0, libtcod.white)
+			libtcod.console_set_default_foreground(0, Game.COLOR_LIT)
 
 			self.render_all()	
 
 			libtcod.console_flush()
 
-			for obj in self.objects:
-				obj.clear()
-
 			player_action = self.handle_keys()
-			print player_action
+			# print player_action
 
-			if self.game_state == 'playing' and player_action != 'didnt-take-turn':
-				for object in self.objects:
-					if object != self.player:
-						print 'The ' + object.name + ' growls!'
+			# if self.game_state == 'playing' and player_action != 'didnt-take-turn':
+			# 	for object in self.objects:
+			# 		if object != self.player:
+			# 			print 'The ' + object.name + ' growls!'
 
 			if player_action == 'exit':
 				break
