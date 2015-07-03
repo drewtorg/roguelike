@@ -1,15 +1,33 @@
 import libtcodpy as libtcod
 
 class Object:
-	def __init__(self, x, y, char, color, console):
+	def __init__(self, x, y, char, name, color, console, blocks=False):
 		self.x = x
 		self.y = y
 		self.char = char
+		self.name = name
 		self.color = color
 		self.con = console
+		self.blocks = blocks
+
+	def move_or_attack(self, dx, dy, map):
+
+		x = self.x + dx
+		y = self.y + dy
+
+		target = None
+		for object in map.objects:
+			if object.x == x and object.y == y:
+				target = object
+				break
+
+		if target is not None:
+			print 'You swing your sword at the ' + target.name + ' and miss horrendously!'
+		else:
+			self.move(dx, dy, map)
 
 	def move(self, dx, dy, map):
-		if not map[self.x + dx][self.y + dy].blocked:
+		if not map.is_blocked(self.x + dx, self.y + dy):
 			self.x += dx
 			self.y += dy
 
@@ -19,4 +37,4 @@ class Object:
 			libtcod.console_put_char(self.con, self.x, self.y, self.char, libtcod.BKGND_NONE)
 
 	def clear(self):
-		libtcod.console_put_char_ex(self.con, self.x, self.y, '.', libtcod.white, libtcod.black)
+		libtcod.console_put_char_ex(self.con, self.x, self.y, '.', libtcod.lightest_grey, libtcod.black)

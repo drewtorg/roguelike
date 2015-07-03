@@ -15,15 +15,19 @@ class Game:
 		self.FOV_ALGO = 0
 		self.FOV_LIGHT_WALLS = True
 		self.TORCH_RADIUS = 5
-		self.LIT = libtcod.white
+		self.LIT = libtcod.lighter_grey
 		self.UNLIT = libtcod.dark_grey
 
+		self.game_state = 'playing'
+		player_action = None
+
 		self.con = libtcod.console_new(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
-		self.player = Object(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2, '@', libtcod.white, self.con)
-		self.map = Map(self.MAP_WIDTH, self.MAP_HEIGHT)
+		self.player = Object(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2, '@', 'Drew', libtcod.pink, self.con, True)
+		self.map = Map(self.MAP_WIDTH, self.MAP_HEIGHT, self.con)
 		self.player.x = self.map.originX
 		self.player.y = self.map.originY
-		self.objects = [self.player]
+		self.objects = self.map.objects
+		self.objects.append(self.player)
 
 		self.fov_recompute = True
 		self.fov_map = self.make_fov_map()
@@ -69,26 +73,30 @@ class Game:
 		libtcod.console_blit(self.con, 0, 0, self.SCREEN_WIDTH, self.SCREEN_HEIGHT, 0, 0, 0)
 
 	def handle_keys(self):
-		key = libtcod.console_wait_for_keypress(True)
+		if self.game_state == 'playing':
+			key = libtcod.console_wait_for_keypress(True)
 
-		if key.vk == libtcod.KEY_ESCAPE:
-			return True
+			if key.vk == libtcod.KEY_ESCAPE:
+				return 'exit'
 
-		if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-			self.player.move(0, -1, self.map)
-			self.fov_recompute = True
+			if libtcod.console_is_key_pressed(libtcod.KEY_UP):
+				self.player.move_or_attack(0, -1, self.map)
+				self.fov_recompute = True
 
-		elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-			self.player.move(0, 1, self.map)
-			self.fov_recompute = True
+			elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
+				self.player.move_or_attack(0, 1, self.map)
+				self.fov_recompute = True
 
-		elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-			self.player.move(-1, 0, self.map)
-			self.fov_recompute = True
+			elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
+				self.player.move_or_attack(-1, 0, self.map)
+				self.fov_recompute = True
 
-		elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-			self.player.move(1, 0, self.map)
-			self.fov_recompute = True
+			elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
+				self.player.move_or_attack(1, 0, self.map)
+				self.fov_recompute = True
+
+			else:
+				return 'didnt-take-turn'
 
 	def run(self):
 		while not libtcod.console_is_window_closed():
@@ -101,6 +109,13 @@ class Game:
 			for obj in self.objects:
 				obj.clear()
 
-			exit = self.handle_keys()
-			if exit:
+			player_action = self.handle_keys()
+			print player_action
+
+			if self.game_state == 'playing' and player_action != 'didnt-take-turn':
+				for object in self.objects:
+					if object != self.player:
+						print 'The ' + object.name + ' growls!'
+
+			if player_action == 'exit':
 				break
