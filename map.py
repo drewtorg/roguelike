@@ -133,33 +133,3 @@ class Map:
 		if self.fov_recompute:
 			self.fov_recompute = False
 			libtcod.map_compute_fov(self.fov_map, self.player.x, self.player.y, Map.TORCH_RADIUS, Map.FOV_LIGHT_WALLS, Map.FOV_ALGO)
-
-	def render_all(self):
-		self.recompute_fov()
-
-		for y in range(self.height):
-			for x in range(self.width):
-				visible = libtcod.map_is_in_fov(self.fov_map, x, y)
-				wall = self.map[x][y].block_sight
-				if not visible:
-					if self.map[x][y].explored:
-						if wall:
-							libtcod.console_put_char_ex(self.con, x, y, '#', Map.COLOR_UNLIT, libtcod.black)
-						else:
-							libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_UNLIT, libtcod.black)
-				else:
-					self.map[x][y].explored = True
-					if wall:
-						libtcod.console_put_char_ex(self.con, x, y, '#', Map.COLOR_LIT, libtcod.black)
-					else:
-						libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_LIT, libtcod.black)
-
-		for object in self.objects:
-			if object != self.player:
-				object.draw()
-		self.player.draw()
-
-		libtcod.console_blit(self.con, 0, 0, self.width, self.height, 0, 0, 0)
-
-		libtcod.console_set_default_foreground(self.con, libtcod.white)
-		libtcod.console_print_ex(0, 1, self.height - 2, libtcod.BKGND_NONE, libtcod.LEFT, 'HP: ' + str(self.player.fighter.hp) + '/' + str(self.player.fighter.max_hp))
