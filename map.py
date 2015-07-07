@@ -84,12 +84,12 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				if libtcod.random_get_int(0, 0, 100) < 80:
-					fighter_component = Components.Fighter(hp=10, defense=0, power=3)
+					fighter_component = Components.Fighter(hp=10, defense=0, power=3, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
 					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self.con, self,
 						blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
-					fighter_component = Components.Fighter(hp=16, defense=1, power=4)
+					fighter_component = Components.Fighter(hp=16, defense=1, power=4, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
 					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self.con, self,
 						blocks=True, fighter=fighter_component, ai=ai_component)
@@ -155,6 +155,11 @@ class Map:
 						libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
 		for object in self.objects:
-			object.draw()
+			if object != self.player:
+				object.draw()
+		self.player.draw()
 
 		libtcod.console_blit(self.con, 0, 0, self.width, self.height, 0, 0, 0)
+
+		libtcod.console_set_default_foreground(self.con, libtcod.white)
+		libtcod.console_print_ex(0, 1, self.height - 2, libtcod.BKGND_NONE, libtcod.LEFT, 'HP: ' + str(self.player.fighter.hp) + '/' + str(self.player.fighter.max_hp))

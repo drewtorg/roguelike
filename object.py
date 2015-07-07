@@ -26,12 +26,12 @@ class Object:
 
 		target = None
 		for object in self.map.objects:
-			if object.x == x and object.y == y:
+			if object.fighter and object.x == x and object.y == y:
 				target = object
 				break
 
 		if target is not None:
-			print 'You swing your sword at the ' + target.name + ' and miss horrendously!'
+			self.fighter.attack(target)
 		else:
 			self.move(dx, dy)
 
@@ -58,3 +58,7 @@ class Object:
 		dx = other.x - self.x
 		dy = other.y - self.y
 		return math.sqrt(dx ** 2 + dy ** 2)
+
+	def send_to_back(self):
+		self.map.objects.remove(self)
+		self.map.objects.insert(0, self)
