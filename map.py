@@ -16,11 +16,10 @@ class Map:
 	COLOR_LIT = libtcod.lighter_grey
 	COLOR_UNLIT = libtcod.dark_grey
 
-	def __init__(self, width, height, con):
+	def __init__(self, width, height):
 		self.height = height
 		self.width = width
 		self.objects = []
-		self.con = con
 		self.make_map()
 		self.fov_recompute = True
 		self.fov_map = self.make_fov_map()
@@ -86,13 +85,11 @@ class Map:
 				if libtcod.random_get_int(0, 0, 100) < 80:
 					fighter_component = Components.Fighter(hp=10, defense=0, power=3, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
-					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self.con, self,
-						blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self, blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
 					fighter_component = Components.Fighter(hp=16, defense=1, power=4, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
-					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self.con, self,
-						blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self, blocks=True, fighter=fighter_component, ai=ai_component)
 
 				self.objects.append(monster)
 

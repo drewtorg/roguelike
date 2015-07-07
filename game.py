@@ -30,9 +30,9 @@ class Game:
 
 		self.player_action = None
 
-		self.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT, self.con)
+		self.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
 		fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
-		self.player = Object(self.map.origin[0], self.map.origin[1], '@', 'Drew', libtcod.pink, self.con, self.map, blocks=True, fighter=fighter_component)
+		self.player = Object(self.map.origin[0], self.map.origin[1], '@', 'Drew', libtcod.pink, self.map, blocks=True, fighter=fighter_component)
 		self.map.objects.append(self.player);
 		self.map.player = self.player
 
@@ -50,12 +50,29 @@ class Game:
 		if bar_width > 0:
 			libtcod.console_rect(self.panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
 
+		#render the text
 		libtcod.console_set_default_foreground(self.panel, libtcod.white)
 		libtcod.console_print_ex(self.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER, name + ': ' + str(value) + '/' + str(maximum))
 
 	def render_all(self):
 		self.map.recompute_fov()
+		self.render_walls_and_floor()
+		self.render_all_objects()
 
+		libtcod.console_blit(self.con, 0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 0, 0, 0)
+		libtcod.console_set_default_background(self.panel, libtcod.black)
+		libtcod.console_clear(self.panel)
+
+		self.render_bar(1, 1, Game.BAR_WIDTH, 'HP', self.player.fighter.hp, self.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
+		libtcod.console_blit(self.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
+
+	def render_all_objects(self):
+		for object in self.map.objects:
+			if object != self.player:
+				self.draw_object(object)
+		self.draw_object(self.player)
+
+	def render_walls_and_floor(self):
 		for y in range(Game.MAP_HEIGHT):
 			for x in range(Game.MAP_WIDTH):
 				visible = libtcod.map_is_in_fov(self.map.fov_map, x, y)
@@ -73,27 +90,17 @@ class Game:
 					else:
 						libtcod.console_put_char_ex(self.con, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
-		for object in self.map.objects:
-			if object != self.player:
-				object.draw()
-		self.player.draw()
-
-		libtcod.console_blit(self.con, 0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 0, 0, 0)
-
-		libtcod.console_set_default_background(self.panel, libtcod.black)
-		libtcod.console_clear(self.panel)
-
-		self.render_bar(1, 1, Game.BAR_WIDTH, 'HP', self.player.fighter.hp, self.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
-		libtcod.console_blit(self.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
+	def draw_object(self, object):
+		if libtcod.map_is_in_fov(self.map.fov_map, object.x, object.y):
+			libtcod.console_set_default_foreground(self.con, object.color)
+			libtcod.console_put_char(self.con, object.x, object.y, object.char, libtcod.BKGND_NONE)
 
 	def handle_keys(self):
 		key = libtcod.console_wait_for_keypress(True)
-
 		if key.vk == libtcod.KEY_ESCAPE:
 			return 'exit'
 
 		if Game.state == 'playing':
-
 			if libtcod.console_is_key_pressed(libtcod.KEY_UP):
 				self.player.move_or_attack(0, -1)
 				self.map.fov_recompute = True

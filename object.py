@@ -2,13 +2,12 @@ import libtcodpy as libtcod
 import math
 
 class Object:
-	def __init__(self, x, y, char, name, color, console, map, blocks=False, fighter=None, ai=None):
+	def __init__(self, x, y, char, name, color, map, blocks=False, fighter=None, ai=None):
 		self.x = x
 		self.y = y
 		self.char = char
 		self.name = name
 		self.color = color
-		self.con = console
 		self.blocks = blocks
 		self.map = map
 
@@ -39,11 +38,6 @@ class Object:
 		if not self.map.is_blocked(self.x + dx, self.y + dy):
 			self.x += dx
 			self.y += dy
-
-	def draw(self):
-		if libtcod.map_is_in_fov(self.map.fov_map, self.x, self.y):
-			libtcod.console_set_default_foreground(self.con, self.color)
-			libtcod.console_put_char(self.con, self.x, self.y, self.char, libtcod.BKGND_NONE)
 
 	def move_towards(self, target_x, target_y):
 		dx = target_x - self.x
