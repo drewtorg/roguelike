@@ -24,10 +24,10 @@ class Fighter:
 		damage = self.power - target.fighter.defense
 
 		if damage > 0:
-			print self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.'
+			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
 			target.fighter.take_damage(damage)
 		else:
-			print self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!'
+			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
 
 #AI for a basic monster
 class BasicMonster:
@@ -44,14 +44,13 @@ class BasicMonster:
 def player_death(player):
 	print game.Game.state
 	game.Game.state = 'dead'
-	print game.Game.state
-	print 'You died'
+	game.Game.message('You died', libtcod.red)
 
 	player.char = '%'
 	player.color = libtcod.dark_red
 
 def monster_death(monster):
-	print monster.name.capitalize() + ' is dead!'
+	game.Game.message(monster.name.capitalize() + ' is dead!', libtcod.orange)
 
 	monster.char = '%'
 	monster.color = libtcod.dark_red
