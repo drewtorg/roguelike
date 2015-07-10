@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import math
 
 class Object:
-	def __init__(self, x, y, char, name, color, map, blocks=False, fighter=None, ai=None):
+	def __init__(self, x, y, char, name, color, map, blocks=False, fighter=None, ai=None, item=None):
 		self.x = x
 		self.y = y
 		self.char = char
@@ -18,6 +18,10 @@ class Object:
 		self.ai = ai
 		if self.ai:
 			self.ai.owner = self
+
+		self.item = item
+		if self.item:
+			self.item.owner = self
 
 	def move_or_attack(self, dx, dy):
 		x = self.x + dx

@@ -29,6 +29,7 @@ class Game:
 	game_msgs = []
 	mouse = libtcod.Mouse()
 	key = libtcod.Key()
+	inventory = []
 
 	def __init__(self):
 		libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
@@ -41,7 +42,7 @@ class Game:
 		self.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
 		fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
 		self.player = Object(self.map.origin[0], self.map.origin[1], '@', 'Drew', libtcod.pink, self.map, blocks=True, fighter=fighter_component)
-		self.map.objects.append(self.player);
+		self.map.objects.append(self.player)
 		self.map.player = self.player
 
 		self.panel = libtcod.console_new(Game.SCREEN_WIDTH, Game.PANEL_HEIGHT)
@@ -158,6 +159,14 @@ class Game:
 				self.map.fov_recompute = True
 
 			else:
+				key_char = chr(Game.key.c)
+
+				if key_char == 'g':
+					for object in self.map.objects:
+						if object.x == self.player.x and object.y == self.player.y and object.item:
+							object.item.pick_up()
+							break
+
 				return 'didnt-take-turn'
 
 	def run(self):

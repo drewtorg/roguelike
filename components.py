@@ -59,3 +59,12 @@ def monster_death(monster):
 	monster.ai = None
 	monster.name = 'remains of ' + monster.name
 	monster.send_to_back()
+
+class Item:
+	def pick_up(self):
+		if len(game.Game.inventory) >= 26:
+			game.Game.message('Your inventory is full, cannot pick up ' + 'self.owner.name' + '.', libtcod.red)
+		else:
+			game.Game.inventory.append(self.owner)
+			self.owner.map.objects.remove(self.owner)
+			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)

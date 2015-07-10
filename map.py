@@ -7,6 +7,7 @@ import components as Components
 class Map:
 
 	MAX_ROOM_MONSTERS = 3
+	MAX_ROOM_ITEMS = 2
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
 	MAX_ROOMS = 30
@@ -76,7 +77,23 @@ class Map:
 
 	def place_objects(self, room):
 		num_monsters = libtcod.random_get_int(0, 0, Map.MAX_ROOM_MONSTERS)
+		self.place_monsters(room, num_monsters)
 
+		num_items = libtcod.random_get_int(0, 0, Map.MAX_ROOM_ITEMS)
+		self.place_items(room, num_items)
+
+	def place_items(self, room, num_items):
+		for i in range(num_items):
+			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
+			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
+
+			if not self.is_blocked(x, y):
+				item_component = Components.Item()
+				item = Object(x, y, '!', 'healing potion', libtcod.violet, self, item=item_component)
+				self.objects.insert(0, item)
+
+
+	def place_monsters(self, room, num_monsters):
 		for i in range(num_monsters):
 			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
