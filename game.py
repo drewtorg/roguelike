@@ -31,9 +31,9 @@ class Game:
 	mouse = libtcod.Mouse()
 	key = libtcod.Key()
 	inventory = []
-	main_console = libtcod.console_new(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT)
-	panel = libtcod.console_new(Game.SCREEN_WIDTH, Game.PANEL_HEIGHT)
-	map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
+	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
+	panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
+	map = Map(MAP_WIDTH, MAP_HEIGHT)
 	player = None
 
 	def __init__(self):
@@ -44,8 +44,8 @@ class Game:
 		Game.player_action = None
 
 		fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
-		player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, Game.map, blocks=True, fighter=fighter_component)
-		Game.map.objects.append(Game.player)
+		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=fighter_component)
+		Game.map.add_object(Game.player)
 
 	@classmethod
 	def message(cls, new_msg, color=libtcod.white):
@@ -106,6 +106,7 @@ class Game:
 		self.render_look()
 
 		libtcod.console_blit(Game.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
+		libtcod.console_flush()
 
 	def render_all_objects(self):
 		for object in Game.map.objects:
@@ -223,10 +224,7 @@ class Game:
 
 			self.render_all()
 
-			libtcod.console_flush()
-
 			player_action = self.handle_keys()
-
 			if Game.state == 'playing' and player_action != 'didnt-take-turn':
 				for object in Game.map.objects:
 					if object.ai:

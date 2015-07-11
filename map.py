@@ -3,6 +3,7 @@ from rect import Rect
 import libtcodpy as libtcod
 from object import Object
 import components as Components
+import game
 
 class Map:
 
@@ -89,16 +90,9 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			if not self.is_blocked(x, y):
-				item_component = Components.Item(use_function=self.cast_heal)
-				item = Object(x, y, '!', 'healing potion', libtcod.violet, self, item=item_component)
+				item_component = Components.Item(use_function=Components.cast_heal)
+				item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
 				self.objects.insert(0, item)
-
-	def cast_heal(self):
-		if self.player.fighter.hp == self.player.figher.max_hp:
-			game.Game.message('You are already at full health.', libtcod.red)
-			return 'cancelled'
-		game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
-		self.player.fighter.heal(4)
 
 	def place_monsters(self, room, num_monsters):
 		for i in range(num_monsters):
@@ -109,13 +103,13 @@ class Map:
 				if libtcod.random_get_int(0, 0, 100) < 80:
 					fighter_component = Components.Fighter(hp=10, defense=0, power=3, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
-					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, self, blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
 					fighter_component = Components.Fighter(hp=16, defense=1, power=4, death_function=Components.monster_death)
 					ai_component = Components.BasicMonster()
-					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, self, blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, blocks=True, fighter=fighter_component, ai=ai_component)
 
-				self.objects.append(monster)
+				self.add_object(monster)
 
 	def create_room(self, room):
 		for x in range(room.x1 + 1, room.x2):
@@ -153,4 +147,14 @@ class Map:
 	def recompute_fov(self):
 		if self.fov_recompute:
 			self.fov_recompute = False
-			libtcod.map_compute_fov(self.fov_map, self.player.x, self.player.y, Map.TORCH_RADIUS, Map.FOV_LIGHT_WALLS, Map.FOV_ALGO)
+			libtcod.map_compute_fov(self.fov_map, game.Game.player.x, game.Game.player.y, Map.TORCH_RADIUS, Map.FOV_LIGHT_WALLS, Map.FOV_ALGO)
+
+	def add_object(self, object):
+		self.objects.append(object)
+
+	def remove_object(self, object):
+		self.objects.remove(object)
+
+	def send_to_back(self, object):
+		self.remove_object(object)
+		self.objects.insert(0, object)

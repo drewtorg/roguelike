@@ -1,15 +1,15 @@
 import libtcodpy as libtcod
 import math
+import game
 
 class Object:
-	def __init__(self, x, y, char, name, color, map, blocks=False, fighter=None, ai=None, item=None):
+	def __init__(self, x, y, char, name, color, blocks=False, fighter=None, ai=None, item=None):
 		self.x = x
 		self.y = y
 		self.char = char
 		self.name = name
 		self.color = color
 		self.blocks = blocks
-		self.map = map
 
 		self.fighter = fighter
 		if self.fighter:
@@ -28,7 +28,7 @@ class Object:
 		y = self.y + dy
 
 		target = None
-		for object in self.map.objects:
+		for object in game.Game.map.objects:
 			if object.fighter and object.x == x and object.y == y:
 				target = object
 				break
@@ -39,7 +39,7 @@ class Object:
 			self.move(dx, dy)
 
 	def move(self, dx, dy):
-		if not self.map.is_blocked(self.x + dx, self.y + dy):
+		if not game.Game.map.is_blocked(self.x + dx, self.y + dy):
 			self.x += dx
 			self.y += dy
 
@@ -56,12 +56,3 @@ class Object:
 		dx = other.x - self.x
 		dy = other.y - self.y
 		return math.sqrt(dx ** 2 + dy ** 2)
-
-	def send_to_back(self):
-		self.map.objects.remove(self)
-		self.map.objects.insert(0, self)
-
-	def heal(self, amount):
-		self.hp += amount
-		if self.hp > self.max_hp:
-			self.hp = self.max_hp

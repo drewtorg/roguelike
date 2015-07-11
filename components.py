@@ -29,20 +29,57 @@ class Fighter:
 		else:
 			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
 
+	def heal(self, amount):
+		self.hp += amount
+		if self.hp > self.max_hp:
+			self.hp = self.max_hp
+
+	def has_max_hp(self):
+		return self.hp == self.max_hp
+
 #AI for a basic monster
 class BasicMonster:
 	def take_turn(self):
 		monster = self.owner
 
-		if libtcod.map_is_in_fov(monster.map.fov_map, monster.x, monster.y):
-			if monster.distance_to(monster.map.player) >= 2:
-				monster.move_towards(monster.map.player.x, monster.map.player.y)
+		if libtcod.map_is_in_fov(game.Game.map.fov_map, monster.x, monster.y):
+			if monster.distance_to(game.Game.player) >= 2:
+				monster.move_towards(game.Game.player.x, game.Game.player.y)
 
-			elif monster.map.player.fighter.hp > 0:
-				monster.fighter.attack(monster.map.player)
+			elif game.Game.player.fighter.hp > 0:
+				monster.fighter.attack(game.Game.player)
 
+class Item:
+	def __init__(self, use_function=None):
+		self.use_function = use_function
+
+	def pick_up(self):
+		if len(game.Game.inventory) >= 26:
+			game.Game.message('Your inventory is full, cannot pick up ' + 'self.owner.name' + '.', libtcod.red)
+		else:
+			game.Game.inventory.append(self.owner)
+			game.Game.map.remove_object(self.owner)
+			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)
+
+	def use(self):
+		if self.use_function is None:
+			game.Game.message('The ' + self.owner.name + ' cannot be used.')
+		else:
+			if self.use_function() != 'cancelled':
+				game.Game.inventory.remove(self.owner)
+
+################################# ITEM FUNCTIONS ###############################
+HEAL_AMOUNT = 4
+
+def cast_heal():
+	if game.Game.player.fighter.has_max_hp():
+		game.Game.message('You are already at full health.', libtcod.red)
+		return 'cancelled'
+	game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
+	game.Game.player.fighter.heal(HEAL_AMOUNT)
+
+################################# DEATH FUNCTIONS ##############################
 def player_death(player):
-	print game.Game.state
 	game.Game.state = 'dead'
 	game.Game.message('You died', libtcod.red)
 
@@ -58,23 +95,4 @@ def monster_death(monster):
 	monster.fighter = None
 	monster.ai = None
 	monster.name = 'remains of ' + monster.name
-	monster.send_to_back()
-
-class Item:
-	def __init__(self, use_function=None):
-		self.use_function = use_function
-
-	def pick_up(self):
-		if len(game.Game.inventory) >= 26:
-			game.Game.message('Your inventory is full, cannot pick up ' + 'self.owner.name' + '.', libtcod.red)
-		else:
-			game.Game.inventory.append(self.owner)
-			self.owner.map.objects.remove(self.owner)
-			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)
-
-	def use(self):
-		if self.use_function is None:
-			game.Game.message('The ' + self.owner.name + ' cannot be used.')
-		else:
-			if self.use_function() != 'cancelled':
-				inventory.remove(self.owner)
+	game.Game.map.send_to_back(monster)
