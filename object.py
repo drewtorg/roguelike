@@ -60,3 +60,8 @@ class Object:
 	def send_to_back(self):
 		self.map.objects.remove(self)
 		self.map.objects.insert(0, self)
+
+	def heal(self, amount):
+		self.hp += amount
+		if self.hp > self.max_hp:
+			self.hp = self.max_hp

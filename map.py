@@ -25,6 +25,7 @@ class Map:
 		self.fov_recompute = True
 		self.fov_map = self.make_fov_map()
 
+
 	def __getitem__(self, key):
 		return self.map[key]
 
@@ -88,10 +89,16 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			if not self.is_blocked(x, y):
-				item_component = Components.Item()
+				item_component = Components.Item(use_function=self.cast_heal)
 				item = Object(x, y, '!', 'healing potion', libtcod.violet, self, item=item_component)
 				self.objects.insert(0, item)
 
+	def cast_heal(self):
+		if self.player.fighter.hp == self.player.figher.max_hp:
+			game.Game.message('You are already at full health.', libtcod.red)
+			return 'cancelled'
+		game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
+		self.player.fighter.heal(4)
 
 	def place_monsters(self, room, num_monsters):
 		for i in range(num_monsters):
