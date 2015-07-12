@@ -45,7 +45,7 @@ class Object:
 			self.y += dy
 
 	def move_towards(self, target):
-		result = astar(game.Game.map, (self.x, self.y), (target.x, target.y))
+		result = astar((self.x, self.y), (target.x, target.y))
 		move_here = result.pop()
 		self.x = move_here[0]
 		self.y = move_here[1]
@@ -58,11 +58,11 @@ class Object:
 def heuristic(a, b):
 	return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
 
-def astar(array, start, goal):
+def astar(start, goal):
 
 	# Allows diagonal movement of enemies
 	# neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1)]
-	
+
 	# Doesn't allow diagonal movement of enemies
 	neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1)]
 
@@ -89,15 +89,15 @@ def astar(array, start, goal):
 		for i, j in neighbors:
 			neighbor = current[0] + i, current[1] + j
 			tentative_g_score = gscore[current] + heuristic(current, neighbor)
-			if 0 <= neighbor[0] < len(array):
-				if 0 <= neighbor[1] < len(array[0]):
-					if array[neighbor[0]][neighbor[1]].blocked == True:
+			if 0 <= neighbor[0] < game.Game.SCREEN_WIDTH:
+				if 0 <= neighbor[1] < game.Game.SCREEN_HEIGHT:
+					if game.Game.map.is_blocked(neighbor[0], neighbor[1]) and not neighbor == goal: #neighbor will block if neighbor is the goal
 						continue
 				else:
-					# array bound y walls
+					# game.Game.map bound y walls
 					continue
 			else:
-				# array bound x walls
+				# game.Game.map bound x walls
 				continue
 
 			if neighbor in close_set and tentative_g_score >= gscore.get(neighbor, 0):
@@ -109,4 +109,4 @@ def astar(array, start, goal):
 				fscore[neighbor] = tentative_g_score + heuristic(neighbor, goal)
 				heappush(oheap, (fscore[neighbor], neighbor))
 
-	return False
+	return [start]
