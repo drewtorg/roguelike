@@ -42,7 +42,7 @@ class BasicMonster:
 	def take_turn(self):
 		monster = self.owner
 
-		if libtcod.map_is_in_fov(game.Game.map.fov_map, monster.x, monster.y):
+		if game.Game.map.is_in_fov(monster):
 			if monster.distance_to(game.Game.player) >= 2:
 				monster.move_towards(game.Game.player.x, game.Game.player.y)
 
@@ -70,6 +70,8 @@ class Item:
 
 ################################# ITEM FUNCTIONS ###############################
 HEAL_AMOUNT = 4
+LIGHTENING_RANGE = 5
+LIGHTENING_DAMAGE = 20
 
 def cast_heal():
 	if game.Game.player.fighter.has_max_hp():
@@ -77,6 +79,14 @@ def cast_heal():
 		return 'cancelled'
 	game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
 	game.Game.player.fighter.heal(HEAL_AMOUNT)
+
+def cast_lightening():
+	monster = game.Game.map.closest_monster(LIGHTENING_RANGE)
+	if monster is None:
+		game.Game.message('No enemy is close enough to strike.', libtcod.red)
+		return 'cancelled'
+	game.Game.message('A lightening bolt strikes the ' + monster.name + ' with a loud thrunder! The damage is ' + str(LIGHTENING_DAMAGE) + ' hit points.', libtcod.light_blue)
+	monster.fighter.take_damage(LIGHTENING_DAMAGE)
 
 ################################# DEATH FUNCTIONS ##############################
 def player_death(player):

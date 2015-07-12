@@ -67,7 +67,7 @@ class Game:
 		(x, y) = (Game.mouse.cx, Game.mouse.cy)
 
 		names = [obj.name.capitalize() for obj in Game.map.objects
-			if obj.x == x and obj.y == y and libtcod.map_is_in_fov(Game.map.fov_map, obj.x, obj.y)]
+			if obj.x == x and obj.y == y and Game.map.is_in_fov(obj)]
 
 		names = ', '.join(names)
 		return names
@@ -133,7 +133,7 @@ class Game:
 						libtcod.console_put_char_ex(Game.main_console, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
 	def draw_object(self, object):
-		if libtcod.map_is_in_fov(Game.map.fov_map, object.x, object.y):
+		if Game.map.is_in_fov(object):
 			libtcod.console_set_default_foreground(Game.main_console, object.color)
 			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
 

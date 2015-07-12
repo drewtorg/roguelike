@@ -90,8 +90,13 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			if not self.is_blocked(x, y):
-				item_component = Components.Item(use_function=Components.cast_heal)
-				item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
+				dice = libtcod.random_get_int(0, 0, 100)
+				if dice < 70:
+					item_component = Components.Item(use_function=Components.cast_heal)
+					item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
+				else:
+					item_component = Components.Item(use_function=Components.cast_lightening)
+					item = Object(x, y, '#', 'scroll of lightening', libtcod.light_yellow, item=item_component)
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):
@@ -149,6 +154,18 @@ class Map:
 			self.fov_recompute = False
 			libtcod.map_compute_fov(self.fov_map, game.Game.player.x, game.Game.player.y, Map.TORCH_RADIUS, Map.FOV_LIGHT_WALLS, Map.FOV_ALGO)
 
+	def closest_monster(self, max_range):
+		closest_enemy = None
+		closest_distance = max_range + 1
+
+		for object in self.objects:
+			if object.fighter and not object == game.Game.player and self.is_in_fov(object):
+				dist = game.Game.player.distance_to(object)
+				if dist < closest_distance:
+					closest_enemy = object
+					closest_distance = dist
+		return closest_enemy
+
 	def add_object(self, object):
 		self.objects.append(object)
 
@@ -158,3 +175,6 @@ class Map:
 	def send_to_back(self, object):
 		self.remove_object(object)
 		self.objects.insert(0, object)
+
+	def is_in_fov(self, object):
+		return libtcod.map_is_in_fov(self.fov_map, object.x, object.y)
