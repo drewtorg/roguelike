@@ -44,10 +44,12 @@ class BasicMonster:
 
 		if game.Game.map.is_in_fov(monster):
 			if monster.distance_to(game.Game.player) >= 2:
-				monster.move_towards(game.Game.player.x, game.Game.player.y)
+				monster.move_towards(game.Game.player)
 
 			elif game.Game.player.fighter.hp > 0:
 				monster.fighter.attack(game.Game.player)
+
+# class ConfusedMonster
 
 class Item:
 	def __init__(self, use_function=None):

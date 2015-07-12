@@ -30,6 +30,9 @@ class Map:
 	def __getitem__(self, key):
 		return self.map[key]
 
+	def __len__(self):
+		return len(self.map)
+
 	def make_map(self):
 		self.map = [[ Tile(True)
 			for y in range(self.height) ]
