@@ -1,7 +1,9 @@
 import libtcodpy as libtcod
 import game
 
-#contains combat related properties and methods
+############################## BASIC COMPONENTS ###############################
+CONFUSE_NUM_TURNS = 10
+
 class Fighter:
 	def __init__(self, hp, defense, power, death_function=None):
 		self.max_hp = hp
@@ -37,7 +39,6 @@ class Fighter:
 	def has_max_hp(self):
 		return self.hp == self.max_hp
 
-#AI for a basic monster
 class BasicMonster:
 	def __init__(self):
 		self.current_path = []
@@ -52,7 +53,20 @@ class BasicMonster:
 		elif game.Game.player.fighter.hp > 0:
 				monster.fighter.attack(game.Game.player)
 
-# class ConfusedMonster
+class ConfusedMonster:
+	def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
+		self.old_ai = old_ai
+		self.num_turns = num_turns
+
+	def take_turn(self):
+		if self.num_turns > 0:
+			self.owner.move(libtcod.random_get_int(0, -1, 1), libtcod.random_get_int(0, -1, 1))
+			self.num_turns -= 1
+
+		else:
+			self.owner.ai = self.old_ai
+			game.Game.message('The ' + self.owner.name + ' is no longer confused!', libtcod.red)
+
 
 class Item:
 	def __init__(self, use_function=None):
@@ -75,8 +89,9 @@ class Item:
 
 ################################# ITEM FUNCTIONS ###############################
 HEAL_AMOUNT = 4
-LIGHTENING_RANGE = 5
-LIGHTENING_DAMAGE = 20
+lightning_RANGE = 5
+lightning_DAMAGE = 20
+CONFUSE_RANGE = 8
 
 def cast_heal():
 	if game.Game.player.fighter.has_max_hp():
@@ -85,13 +100,23 @@ def cast_heal():
 	game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
 	game.Game.player.fighter.heal(HEAL_AMOUNT)
 
-def cast_lightening():
-	monster = game.Game.map.closest_monster(LIGHTENING_RANGE)
+def cast_lightning():
+	monster = game.Game.map.closest_monster(lightning_RANGE)
 	if monster is None:
 		game.Game.message('No enemy is close enough to strike.', libtcod.red)
 		return 'cancelled'
-	game.Game.message('A lightening bolt strikes the ' + monster.name + ' with a loud thrunder! The damage is ' + str(LIGHTENING_DAMAGE) + ' hit points.', libtcod.light_blue)
-	monster.fighter.take_damage(LIGHTENING_DAMAGE)
+	game.Game.message('A lightning bolt strikes the ' + monster.name + ' with a loud thunder! The damage is ' + str(lightning_DAMAGE) + ' hit points.', libtcod.light_blue)
+	monster.fighter.take_damage(lightning_DAMAGE)
+
+def cast_confuse():
+	monster = game.Game.map.closest_monster(CONFUSE_RANGE)
+	if monster is None:
+		game.Game.message('No enemy is close enough to confuse.', libtcod.red)
+		return 'cancelled'
+	old_ai = monster.ai
+	monster.ai = ConfusedMonster(old_ai)
+	monster.ai.owner = monster
+	game.Game.message('The eyes of the ' + monster.name + ' look vacant, as he starts to stumble around!', libtcod.light_green)
 
 ################################# DEATH FUNCTIONS ##############################
 def player_death(player):

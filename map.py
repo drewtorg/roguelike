@@ -97,9 +97,12 @@ class Map:
 				if dice < 70:
 					item_component = Components.Item(use_function=Components.cast_heal)
 					item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
+				elif dice < 70 + 15:
+					item_component = Components.Item(use_function=Components.cast_lightning)
+					item = Object(x, y, '#', 'scroll of lightning', libtcod.light_yellow, item=item_component)
 				else:
-					item_component = Components.Item(use_function=Components.cast_lightening)
-					item = Object(x, y, '#', 'scroll of lightening', libtcod.light_yellow, item=item_component)
+					item_component = Components.Item(use_function=Components.cast_confuse)
+					item = Object(x, y, '#', 'scroll of confusion', libtcod.light_yellow, item=item_component)
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):

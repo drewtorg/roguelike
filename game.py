@@ -162,6 +162,10 @@ class Game:
 			else:
 				key_char = chr(Game.key.c)
 
+				if key_char == 'w':
+					Game.message('You wait.', libtcod.light_green)
+					return 'wait'
+
 				if key_char == 'g':
 					for object in Game.map.objects:
 						if object.x == Game.player.x and object.y == Game.player.y and object.item:
