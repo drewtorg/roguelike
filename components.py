@@ -39,14 +39,17 @@ class Fighter:
 
 #AI for a basic monster
 class BasicMonster:
+	def __init__(self):
+		self.current_path = []
+
 	def take_turn(self):
 		monster = self.owner
 
-		if game.Game.map.is_in_fov(monster):
-			if monster.distance_to(game.Game.player) >= 2:
-				monster.move_towards(game.Game.player)
+		#if you can't hit the player, try to move towards him
+		if monster.distance_to(game.Game.player) >= 2:
+			monster.try_move_towards(game.Game.player)
 
-			elif game.Game.player.fighter.hp > 0:
+		elif game.Game.player.fighter.hp > 0:
 				monster.fighter.attack(game.Game.player)
 
 # class ConfusedMonster

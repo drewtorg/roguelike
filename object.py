@@ -44,11 +44,16 @@ class Object:
 			self.x += dx
 			self.y += dy
 
-	def move_towards(self, target):
-		result = astar((self.x, self.y), (target.x, target.y))
-		move_here = result.pop()
-		self.x = move_here[0]
-		self.y = move_here[1]
+	def try_move_towards(self, target):
+		if game.Game.map.is_in_fov(self):
+			self.ai.current_path = astar((self.x, self.y), (target.x, target.y))
+		self.track_target()
+
+	def track_target(self):
+		if not self.ai.current_path == []:
+			move_here = self.ai.current_path.pop()
+			self.x = move_here[0]
+			self.y = move_here[1]
 
 	def distance_to(self, other):
 		dx = other.x - self.x
