@@ -60,6 +60,9 @@ class Object:
 		dy = other.y - self.y
 		return math.sqrt(dx ** 2 + dy ** 2)
 
+	def distance(self, x, y):
+		return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+
 def heuristic(a, b):
 	return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
 

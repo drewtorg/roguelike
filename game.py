@@ -137,46 +137,6 @@ class Game:
 			libtcod.console_set_default_foreground(Game.main_console, object.color)
 			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
 
-	def handle_keys(self):
-		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
-		if Game.key.vk == libtcod.KEY_ESCAPE:
-			return 'exit'
-
-		if Game.state == 'playing':
-			if Game.key.vk == libtcod.KEY_UP:
-				Game.player.move_or_attack(0, -1)
-				Game.map.fov_recompute = True
-
-			elif Game.key.vk == libtcod.KEY_DOWN:
-				Game.player.move_or_attack(0, 1)
-				Game.map.fov_recompute= True
-
-			elif Game.key.vk == libtcod.KEY_LEFT:
-				Game.player.move_or_attack(-1, 0)
-				Game.map.fov_recompute = True
-
-			elif Game.key.vk == libtcod.KEY_RIGHT:
-				Game.player.move_or_attack(1, 0)
-				Game.map.fov_recompute = True
-
-			else:
-				key_char = chr(Game.key.c)
-
-				if key_char == 'w':
-					Game.message('You wait.', libtcod.light_green)
-					return 'wait'
-
-				if key_char == 'g':
-					for object in Game.map.objects:
-						if object.x == Game.player.x and object.y == Game.player.y and object.item:
-							object.item.pick_up()
-							break
-				if key_char == 'i':
-					chosen_item = self.inventory_menu('Press the next next to an item to use it, or any other to cancel.\n')
-					if chosen_item is not None:
-						chosen_item.use()
-
-				return 'didnt-take-turn'
 
 	def menu(self, header, options, width):
 		if len(options) > 26:
@@ -219,6 +179,61 @@ class Game:
 		if index is None or len(Game.inventory) == 0:
 			return None
 		return Game.inventory[index].item
+
+	def target_tile(self, max_range=None):
+		while True:
+			libtcod.console_flush()
+			libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
+			self.render_all()
+
+			(x, y) = (Game.mouse.cx, Game.mouse.cy)
+
+			if (Game.mouse.lbutton_pressed and Game.map.is_in_fov(x, y)) and (max_range is None or Game.player.distance(x, y) <= max_range):
+				return (x, y)
+
+			if Game.mouse.rbutton_pressed or Game.key.vk == libtcod.KEY_ESCAPE:
+				return (None, None)
+
+	def handle_keys(self):
+		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
+		if Game.key.vk == libtcod.KEY_ESCAPE:
+			return 'exit'
+
+		if Game.state == 'playing':
+			if Game.key.vk == libtcod.KEY_UP:
+				Game.player.move_or_attack(0, -1)
+				Game.map.fov_recompute = True
+
+			elif Game.key.vk == libtcod.KEY_DOWN:
+				Game.player.move_or_attack(0, 1)
+				Game.map.fov_recompute= True
+
+			elif Game.key.vk == libtcod.KEY_LEFT:
+				Game.player.move_or_attack(-1, 0)
+				Game.map.fov_recompute = True
+
+			elif Game.key.vk == libtcod.KEY_RIGHT:
+				Game.player.move_or_attack(1, 0)
+				Game.map.fov_recompute = True
+
+			else:
+				key_char = chr(Game.key.c)
+
+				if key_char == 'w':
+					Game.message('You wait.', libtcod.light_green)
+					return 'wait'
+
+				if key_char == 'g':
+					for object in Game.map.objects:
+						if object.x == Game.player.x and object.y == Game.player.y and object.item:
+							object.item.pick_up()
+							break
+				if key_char == 'i':
+					chosen_item = self.inventory_menu('Press the next next to an item to use it, or any other to cancel.\n')
+					if chosen_item is not None:
+						chosen_item.use()
+
+				return 'didnt-take-turn'
 
 	def run(self):
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)

@@ -92,6 +92,8 @@ HEAL_AMOUNT = 4
 lightning_RANGE = 5
 lightning_DAMAGE = 20
 CONFUSE_RANGE = 8
+FIREBALL_RADIUS = 3
+FIREBALL_DAMAGE = 12
 
 def cast_heal():
 	if game.Game.player.fighter.has_max_hp():
@@ -117,6 +119,19 @@ def cast_confuse():
 	monster.ai = ConfusedMonster(old_ai)
 	monster.ai.owner = monster
 	game.Game.message('The eyes of the ' + monster.name + ' look vacant, as he starts to stumble around!', libtcod.light_green)
+
+def cast_fireball():
+	game.Game.message('Left-click a target tile for the fireball, or right-click to cancel.', libtcod.light_cyan)
+	# (x, y) = game.Game.target_tile()
+	x = None
+	if x is None:
+		return 'cancelled'
+	game.Game.message('The fireball explodes, burning everything within ' + str(FIREBALL_RADIUS) + ' tiles!', libtcod.orange)
+
+	for obj in Game.map.objects:
+		if obj.distance(x, y) <= FIREBALL_RADIUS and obj.fighter:
+			game.Game.message('The ' + obj.name + ' gets burned for ' + str(FIREBALL_DAMAGE) + ' hit points!', libtcod.orange)
+			obj.fighter.take_damage(FIREBALL_DAMAGE)
 
 ################################# DEATH FUNCTIONS ##############################
 def player_death(player):

@@ -94,15 +94,18 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				dice = libtcod.random_get_int(0, 0, 100)
-				if dice < 70:
+				if dice > 70:
 					item_component = Components.Item(use_function=Components.cast_heal)
 					item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
-				elif dice < 70 + 15:
+				elif dice > 70 + 10:
 					item_component = Components.Item(use_function=Components.cast_lightning)
 					item = Object(x, y, '#', 'scroll of lightning', libtcod.light_yellow, item=item_component)
-				else:
+				elif dice > 70 + 10 + 10:
 					item_component = Components.Item(use_function=Components.cast_confuse)
 					item = Object(x, y, '#', 'scroll of confusion', libtcod.light_yellow, item=item_component)
+				else:
+					item_component = Components.Item(use_function=Components.cast_fireball)
+					item = Object(x, y, '#', 'scroll of fireball', libtcod.light_yellow, item=item_component)					
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):
