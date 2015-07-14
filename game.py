@@ -56,14 +56,16 @@ class Game:
 				del cls.game_msgs[0]
 			cls.game_msgs.append( (line, color) )
 
-	def render_messages(self):
+	@staticmethod
+	def render_messages():
 		y = 1
 		for (line, color) in Game.game_msgs:
 			libtcod.console_set_default_foreground(Game.panel, color)
 			libtcod.console_print_ex(Game.panel, Game.MSG_X, y, libtcod.BKGND_NONE, libtcod.LEFT, line)
 			y += 1
 
-	def get_names_under_mouse(self):
+	@staticmethod
+	def get_names_under_mouse():
 		(x, y) = (Game.mouse.cx, Game.mouse.cy)
 
 		names = [obj.name.capitalize() for obj in Game.map.objects
@@ -72,11 +74,13 @@ class Game:
 		names = ', '.join(names)
 		return names
 
-	def render_look(self):
+	@staticmethod
+	def render_look():
 		libtcod.console_set_default_foreground(Game.panel, libtcod.light_grey)
-		libtcod.console_print_ex(Game.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, self.get_names_under_mouse())
+		libtcod.console_print_ex(Game.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, Game.get_names_under_mouse())
 
-	def render_bar(self, x, y, total_width, name, value, maximum, bar_color, back_color):
+	@staticmethod
+	def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
 		bar_width = int(float(value) / maximum * total_width)
 
 		#render the background
@@ -92,29 +96,32 @@ class Game:
 		libtcod.console_set_default_foreground(Game.panel, libtcod.white)
 		libtcod.console_print_ex(Game.panel, x + total_width / 2, y, libtcod.BKGND_NONE, libtcod.CENTER, name + ': ' + str(value) + '/' + str(maximum))
 
-	def render_all(self):
+	@staticmethod
+	def render_all():
 		Game.map.recompute_fov()
-		self.render_walls_and_floor()
-		self.render_all_objects()
+		Game.render_walls_and_floor()
+		Game.render_all_objects()
 
 		libtcod.console_blit(Game.main_console, 0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 0, 0, 0)
 		libtcod.console_set_default_background(Game.panel, libtcod.black)
 		libtcod.console_clear(Game.panel)
 
-		self.render_messages()
-		self.render_bar(1, 1, Game.BAR_WIDTH, 'HP', Game.player.fighter.hp, Game.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
-		self.render_look()
+		Game.render_messages()
+		Game.render_bar(1, 1, Game.BAR_WIDTH, 'HP', Game.player.fighter.hp, Game.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
+		Game.render_look()
 
 		libtcod.console_blit(Game.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
 		libtcod.console_flush()
 
-	def render_all_objects(self):
+	@staticmethod
+	def render_all_objects():
 		for object in Game.map.objects:
 			if object != Game.player:
-				self.draw_object(object)
-		self.draw_object(Game.player)
+				Game.draw_object(object)
+		Game.draw_object(Game.player)
 
-	def render_walls_and_floor(self):
+	@staticmethod
+	def render_walls_and_floor():
 		for y in range(Game.MAP_HEIGHT):
 			for x in range(Game.MAP_WIDTH):
 				visible = libtcod.map_is_in_fov(Game.map.fov_map, x, y)
@@ -132,13 +139,14 @@ class Game:
 					else:
 						libtcod.console_put_char_ex(Game.main_console, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
-	def draw_object(self, object):
+	@staticmethod
+	def draw_object(object):
 		if Game.map.is_in_fov(object):
 			libtcod.console_set_default_foreground(Game.main_console, object.color)
 			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
 
-
-	def menu(self, header, options, width):
+	@staticmethod
+	def menu(header, options, width):
 		if len(options) > 26:
 			raise ValueError('Cannot have a menu with more than 26 options')
 
@@ -169,32 +177,35 @@ class Game:
 			return index
 		return None
 
-	def inventory_menu(self, header):
+	@staticmethod
+	def inventory_menu(header):
 		if len(Game.inventory) == 0:
 			options = ['Inventory is empty.']
 		else:
 			options = [item.name for item in Game.inventory]
 
-		index = self.menu(header, options, Game.INVENTORY_WIDTH)
+		index = Game.menu(header, options, Game.INVENTORY_WIDTH)
 		if index is None or len(Game.inventory) == 0:
 			return None
 		return Game.inventory[index].item
 
-	def target_tile(self, max_range=None):
+	@staticmethod
+	def target_tile(max_range=None):
 		while True:
 			libtcod.console_flush()
 			libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
-			self.render_all()
+			Game.render_all()
 
 			(x, y) = (Game.mouse.cx, Game.mouse.cy)
 
-			if (Game.mouse.lbutton_pressed and Game.map.is_in_fov(x, y)) and (max_range is None or Game.player.distance(x, y) <= max_range):
+			if (Game.mouse.lbutton_pressed and Game.map.is_tile_in_fov(x, y)) and (max_range is None or Game.player.distance(x, y) <= max_range):
 				return (x, y)
 
 			if Game.mouse.rbutton_pressed or Game.key.vk == libtcod.KEY_ESCAPE:
 				return (None, None)
 
-	def handle_keys(self):
+	@staticmethod
+	def handle_keys():
 		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
 		if Game.key.vk == libtcod.KEY_ESCAPE:
 			return 'exit'
@@ -229,7 +240,7 @@ class Game:
 							object.item.pick_up()
 							break
 				if key_char == 'i':
-					chosen_item = self.inventory_menu('Press the next next to an item to use it, or any other to cancel.\n')
+					chosen_item = Game.inventory_menu('Press the next next to an item to use it, or any other to cancel.\n')
 					if chosen_item is not None:
 						chosen_item.use()
 
@@ -241,9 +252,9 @@ class Game:
 		while not libtcod.console_is_window_closed():
 			libtcod.console_set_default_foreground(0, Game.COLOR_LIT)
 
-			self.render_all()
+			Game.render_all()
 
-			player_action = self.handle_keys()
+			player_action = Game.handle_keys()
 			if Game.state == 'playing' and player_action != 'didnt-take-turn':
 				for object in Game.map.objects:
 					if object.ai:

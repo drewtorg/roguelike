@@ -188,6 +188,9 @@ class Map:
 	def is_in_fov(self, object):
 		return libtcod.map_is_in_fov(self.fov_map, object.x, object.y)
 
+	def is_tile_in_fov(self, x, y):
+		return libtcod.map_is_in_fov(self.fov_map, x, y)
+
 	def object_at(self, x, y):
 		for object in self.objects:
 			if object.x == x and object.y == y:

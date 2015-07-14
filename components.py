@@ -122,13 +122,12 @@ def cast_confuse():
 
 def cast_fireball():
 	game.Game.message('Left-click a target tile for the fireball, or right-click to cancel.', libtcod.light_cyan)
-	# (x, y) = game.Game.target_tile()
-	x = None
+	(x, y) = game.Game.target_tile()
 	if x is None:
 		return 'cancelled'
 	game.Game.message('The fireball explodes, burning everything within ' + str(FIREBALL_RADIUS) + ' tiles!', libtcod.orange)
 
-	for obj in Game.map.objects:
+	for obj in game.Game.map.objects:
 		if obj.distance(x, y) <= FIREBALL_RADIUS and obj.fighter:
 			game.Game.message('The ' + obj.name + ' gets burned for ' + str(FIREBALL_DAMAGE) + ' hit points!', libtcod.orange)
 			obj.fighter.take_damage(FIREBALL_DAMAGE)
