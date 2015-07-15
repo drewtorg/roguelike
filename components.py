@@ -111,9 +111,9 @@ def cast_lightning():
 	monster.fighter.take_damage(lightning_DAMAGE)
 
 def cast_confuse():
-	monster = game.Game.map.closest_monster(CONFUSE_RANGE)
+	game.Game.message('Left-click an enemy to confuse it, or right-click to cancel.', libtcod.light_cyan)
+	monster =  game.Game.target_monster(CONFUSE_RANGE)
 	if monster is None:
-		game.Game.message('No enemy is close enough to confuse.', libtcod.red)
 		return 'cancelled'
 	old_ai = monster.ai
 	monster.ai = ConfusedMonster(old_ai)

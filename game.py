@@ -34,18 +34,16 @@ class Game:
 	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 	panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
 	map = Map(MAP_WIDTH, MAP_HEIGHT)
-	player = None
+	
+	libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
+	libtcod.sys_set_fps(LIMIT_FPS)
 
-	def __init__(self):
-		libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-		libtcod.console_init_root(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 'Libtcod Tutorial', False)
-		libtcod.sys_set_fps(Game.LIMIT_FPS)
+	player_action = None
 
-		Game.player_action = None
-
-		fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
-		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=fighter_component)
-		Game.map.add_object(Game.player)
+	__fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
+	player = Object(map.origin[0], map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=__fighter_component)
+	map.add_object(player)
 
 	@classmethod
 	def message(cls, new_msg, color=libtcod.white):
@@ -205,6 +203,17 @@ class Game:
 				return (None, None)
 
 	@staticmethod
+	def target_monster(max_range=None):
+		while True:
+			(x, y) = Game.target_tile(max_range)
+			if x is None:
+				return None
+
+			for obj in Game.map.objects:
+				if obj.x == x and obj.y == y and obj.fighter and obj != Game.player:
+					return obj
+
+	@staticmethod
 	def handle_keys():
 		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
 		if Game.key.vk == libtcod.KEY_ESCAPE:
@@ -246,7 +255,8 @@ class Game:
 
 				return 'didnt-take-turn'
 
-	def run(self):
+	@staticmethod
+	def run():
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
 
 		while not libtcod.console_is_window_closed():
