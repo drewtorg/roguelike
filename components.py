@@ -80,6 +80,13 @@ class Item:
 			game.Game.map.remove_object(self.owner)
 			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)
 
+	def drop(self):
+		game.Game.inventory.remove(self.owner)
+		self.owner.x = game.Game.player.x
+		self.owner.y = game.Game.player.y
+		game.Game.map.add_object(self.owner)
+		game.Game.message('You dropped a ' + self.owner.name + '.', libtcod.yellow)
+
 	def use(self):
 		if self.use_function is None:
 			game.Game.message('The ' + self.owner.name + ' cannot be used.')

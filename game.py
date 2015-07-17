@@ -34,15 +34,15 @@ class Game:
 	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 	panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
 	map = Map(MAP_WIDTH, MAP_HEIGHT)
-	
+
 	libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
 	libtcod.sys_set_fps(LIMIT_FPS)
 
 	player_action = None
 
-	__fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
-	player = Object(map.origin[0], map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=__fighter_component)
+	_fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
+	player = Object(map.origin[0], map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
 	map.add_object(player)
 
 	@classmethod
@@ -248,10 +248,16 @@ class Game:
 						if object.x == Game.player.x and object.y == Game.player.y and object.item:
 							object.item.pick_up()
 							break
+
 				if key_char == 'i':
-					chosen_item = Game.inventory_menu('Press the next next to an item to use it, or any other to cancel.\n')
+					chosen_item = Game.inventory_menu('Press the key next to an item to use it, or any other to cancel.\n')
 					if chosen_item is not None:
 						chosen_item.use()
+
+				if key_char == 'd':
+					chosen_item = Game.inventory_menu('Press the key next to an item to drop it, or any other to cancel.\n')
+					if chosen_item is not None:
+						chosen_item.drop()
 
 				return 'didnt-take-turn'
 

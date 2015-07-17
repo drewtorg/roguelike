@@ -24,6 +24,12 @@ class Object:
 		if self.item:
 			self.item.owner = self
 
+	def __str__(self):
+		newStr = 'Name: ' + self.name + '\n'
+		newStr += 'Char: ' + self.char + '\n'
+		newStr += 'Location: ' + '(' + str(self.x) + ', ' + str(self.y) + ')'
+		return newStr;
+
 	def move_or_attack(self, dx, dy):
 		x = self.x + dx
 		y = self.y + dy
