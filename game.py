@@ -5,6 +5,7 @@ from rect import Rect
 from map import Map
 import components as Components
 import textwrap
+import shelve
 
 class Game:
 
@@ -26,24 +27,56 @@ class Game:
 	MSG_HEIGHT = PANEL_HEIGHT - 1
 	INVENTORY_WIDTH = 50
 
-	state = 'playing'
-	game_msgs = []
-	mouse = libtcod.Mouse()
-	key = libtcod.Key()
-	inventory = []
-	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
-	panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
-	map = Map(MAP_WIDTH, MAP_HEIGHT)
-
 	libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
 	libtcod.sys_set_fps(LIMIT_FPS)
+	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-	player_action = None
+	@staticmethod
+	def new_game():
+		Game.state = 'playing'
+		Game.game_msgs = []
+		Game.mouse = libtcod.Mouse()
+		Game.key = libtcod.Key()
+		Game.inventory = []
+		Game.panel = libtcod.console_new(Game.SCREEN_WIDTH, Game.PANEL_HEIGHT)
+		Game.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
 
-	_fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
-	player = Object(map.origin[0], map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
-	map.add_object(player)
+		libtcod.console_clear(Game.main_console)
+
+		_fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
+		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
+		Game.map.add_object(Game.player)
+
+		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
+
+	@staticmethod
+	def save_game():
+		file = shelve.open('save/savegame', 'n')
+		file['Game.map'] = Game.map
+		file['Game.map.objects'] = Game.map.objects
+		file['Game.inventory'] = Game.inventory
+		file['Game.key'] = Game.key
+		file['Game.mouse'] = Game.mouse
+		file['Game.panel'] = Game.panel
+		file['Game.game_msgs'] = Game.game_msgs
+		file['Game.state'] = Game.state
+		file['player_index'] = Game.map.objects.index(Game.player)
+		file.close()
+
+	@staticmethod
+	def load_game():
+		file = shelve.open('save/savegame', 'r')
+		Game.map = file['Game.map']
+		Game.map.objects = file['Game.map.objects']
+		Game.inventory = file['Game.inventory']
+		Game.key = file['Game.key']
+		Game.mouse = file['Game.mouse']
+		Game.panel = file['Game.panel']
+		Game.game_msgs = file['Game.game_msgs']
+		Game.state = file['Game.state']
+		Game.player = Game.map.objects[file['player_index']]
+		file.close()
 
 	@classmethod
 	def message(cls, new_msg, color=libtcod.white):
@@ -145,6 +178,9 @@ class Game:
 
 	@staticmethod
 	def menu(header, options, width):
+		if header == '':
+			header_height = 0
+
 		if len(options) > 26:
 			raise ValueError('Cannot have a menu with more than 26 options')
 
@@ -170,6 +206,7 @@ class Game:
 
 		libtcod.console_flush()
 		key = libtcod.console_wait_for_keypress(True)
+		key = libtcod.console_wait_for_keypress(True)
 		index = key.c - ord('a')
 		if index >= 0 and index < len(options):
 			return index
@@ -186,6 +223,36 @@ class Game:
 		if index is None or len(Game.inventory) == 0:
 			return None
 		return Game.inventory[index].item
+
+	@staticmethod
+	def main_menu():
+		img = libtcod.image_load('img/menu_background1.png')
+
+		while not libtcod.console_is_window_closed():
+			libtcod.image_blit_2x(img, 0, 0, 0)
+
+			libtcod.console_set_default_foreground(0, libtcod.light_yellow)
+			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT/2 - 4, libtcod.BKGND_NONE, libtcod.CENTER, 'TITLE HERE')
+			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT - 2, libtcod.BKGND_NONE, libtcod.CENTER, 'By Drew')
+
+			choice = Game.menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
+
+			if choice == 0:
+				Game.new_game()
+				Game.run()
+			elif choice == 1:
+				try:
+					Game.load_game()
+				except:
+					Game.msgbox('\n No saved game to load.\n', 24)
+					continue
+				Game.run()
+			elif choice == 2:
+				break
+
+	@staticmethod
+	def msgbox(text, width=50):
+		Game.menu(text, [], width)
 
 	@staticmethod
 	def target_tile(max_range=None):
@@ -212,6 +279,11 @@ class Game:
 			for obj in Game.map.objects:
 				if obj.x == x and obj.y == y and obj.fighter and obj != Game.player:
 					return obj
+
+	@staticmethod
+	def update():
+		for object in Game.map.objects:
+			object.update()
 
 	@staticmethod
 	def handle_keys():
@@ -263,7 +335,7 @@ class Game:
 
 	@staticmethod
 	def run():
-		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
+		player_action = None
 
 		while not libtcod.console_is_window_closed():
 			libtcod.console_set_default_foreground(0, Game.COLOR_LIT)
@@ -271,10 +343,10 @@ class Game:
 			Game.render_all()
 
 			player_action = Game.handle_keys()
+
 			if Game.state == 'playing' and player_action != 'didnt-take-turn':
-				for object in Game.map.objects:
-					if object.ai:
-						object.ai.take_turn()
+				Game.update()
 
 			if player_action == 'exit':
+				Game.save_game()
 				break

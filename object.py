@@ -30,6 +30,10 @@ class Object:
 		newStr += 'Location: ' + '(' + str(self.x) + ', ' + str(self.y) + ')'
 		return newStr;
 
+	def update(self):
+		if self.ai:
+			self.ai.take_turn()
+
 	def move_or_attack(self, dx, dy):
 		x = self.x + dx
 		y = self.y + dy
@@ -78,7 +82,7 @@ def astar(start, goal):
 	# neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1)]
 
 	# Doesn't allow diagonal movement of enemies
-	neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1)]
+	neighbors = [(0,1),(0,-1),(1,0),(-1,0)]
 
 	close_set = set()
 	came_from = {}
