@@ -5,7 +5,6 @@ from rect import Rect
 from map import Map
 import components as Components
 import textwrap
-import shelve
 
 class Game:
 
@@ -49,34 +48,6 @@ class Game:
 		Game.map.add_object(Game.player)
 
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
-
-	@staticmethod
-	def save_game():
-		file = shelve.open('save/savegame', 'n')
-		file['Game.map'] = Game.map
-		file['Game.map.objects'] = Game.map.objects
-		file['Game.inventory'] = Game.inventory
-		file['Game.key'] = Game.key
-		file['Game.mouse'] = Game.mouse
-		file['Game.panel'] = Game.panel
-		file['Game.game_msgs'] = Game.game_msgs
-		file['Game.state'] = Game.state
-		file['player_index'] = Game.map.objects.index(Game.player)
-		file.close()
-
-	@staticmethod
-	def load_game():
-		file = shelve.open('save/savegame', 'r')
-		Game.map = file['Game.map']
-		Game.map.objects = file['Game.map.objects']
-		Game.inventory = file['Game.inventory']
-		Game.key = file['Game.key']
-		Game.mouse = file['Game.mouse']
-		Game.panel = file['Game.panel']
-		Game.game_msgs = file['Game.game_msgs']
-		Game.state = file['Game.state']
-		Game.player = Game.map.objects[file['player_index']]
-		file.close()
 
 	@classmethod
 	def message(cls, new_msg, color=libtcod.white):
@@ -235,18 +206,17 @@ class Game:
 			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT/2 - 4, libtcod.BKGND_NONE, libtcod.CENTER, 'TITLE HERE')
 			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT - 2, libtcod.BKGND_NONE, libtcod.CENTER, 'By Drew')
 
-			choice = Game.menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
+			choice = Game.menu('', ['Play a new game', 'Continue current game', 'Quit'], 24)
 
 			if choice == 0:
 				Game.new_game()
 				Game.run()
 			elif choice == 1:
 				try:
-					Game.load_game()
+					Game.run()
 				except:
 					Game.msgbox('\n No saved game to load.\n', 24)
 					continue
-				Game.run()
 			elif choice == 2:
 				break
 
@@ -344,9 +314,9 @@ class Game:
 
 			player_action = Game.handle_keys()
 
+			if player_action == 'exit':
+				break
+
 			if Game.state == 'playing' and player_action != 'didnt-take-turn':
 				Game.update()
 
-			if player_action == 'exit':
-				Game.save_game()
-				break
