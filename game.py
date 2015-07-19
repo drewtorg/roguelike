@@ -261,8 +261,12 @@ class Game:
 		Game.player.fighter.heal(Game.player.fighter.max_hp / 2)
 
 		Game.message('You descend deeper into the heart of the dungeon...', libtcod.red)
-		Game.map.make_map()
-		Game.map.make_fov_map()
+		libtcod.console_clear(Game.main_console)
+		Game.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
+		Game.player.x = Game.map.origin[0]
+		Game.player.y = Game.map.origin[1]
+		Game.map.add_object(Game.player)
+
 
 	@staticmethod
 	def handle_keys():
@@ -310,7 +314,7 @@ class Game:
 					if chosen_item is not None:
 						chosen_item.drop()
 
-				if key_char == '<':  
+				if key_char == '<':
 					if Game.map.stairs.x == Game.player.x and Game.map.stairs.y == Game.player.y:
 						Game.next_level()
 
@@ -332,4 +336,3 @@ class Game:
 
 			if Game.state == 'playing' and player_action != 'didnt-take-turn':
 				Game.update()
-

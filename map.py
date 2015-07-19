@@ -109,7 +109,7 @@ class Map:
 					item = Object(x, y, '#', 'scroll of confusion', libtcod.yellow, item=item_component)
 				else:
 					item_component = Components.Item(use_function=Components.cast_fireball)
-					item = Object(x, y, '#', 'scroll of fireball', libtcod.yellow, item=item_component)					
+					item = Object(x, y, '#', 'scroll of fireball', libtcod.yellow, item=item_component)
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):
@@ -156,6 +156,7 @@ class Map:
 		return False
 
 	def make_fov_map(self):
+		self.fov_recompute = True
 		fov_map = libtcod.map_new(self.width, self.height)
 		for y in range(self.height):
 			for x in range(self.width):
