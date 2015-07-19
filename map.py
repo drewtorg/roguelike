@@ -7,7 +7,7 @@ import game
 
 class Map:
 
-	MAX_ROOM_MONSTERS = 0
+	MAX_ROOM_MONSTERS = 2
 	MAX_ROOM_ITEMS = 2
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
@@ -80,7 +80,7 @@ class Map:
 				rooms.append(new_room)
 				num_rooms+= 1
 
-		self.stairs = Object(new_x, new_y, '<', 'stairs', libtcod.white)
+		self.stairs = Object(new_x, new_y, '<', 'stairs', libtcod.white, always_visible=True)
 		self.objects.append(self.stairs)
 		self.send_to_back(self.stairs)
 
@@ -100,16 +100,16 @@ class Map:
 				dice = libtcod.random_get_int(0, 0, 100)
 				if dice < 70:
 					item_component = Components.Item(use_function=Components.cast_heal)
-					item = Object(x, y, '!', 'healing potion', libtcod.violet, item=item_component)
+					item = Object(x, y, '!', 'healing potion', libtcod.violet, always_visible=True, item=item_component)
 				elif dice < 70 + 10:
 					item_component = Components.Item(use_function=Components.cast_lightning)
-					item = Object(x, y, '#', 'scroll of lightning', libtcod.yellow, item=item_component)
+					item = Object(x, y, '#', 'scroll of lightning', libtcod.dark_amber, always_visible=True, item=item_component)
 				elif dice < 70 + 10 + 10:
 					item_component = Components.Item(use_function=Components.cast_confuse)
-					item = Object(x, y, '#', 'scroll of confusion', libtcod.yellow, item=item_component)
+					item = Object(x, y, '#', 'scroll of confusion', libtcod.dark_amber, always_visible=True, item=item_component)
 				else:
 					item_component = Components.Item(use_function=Components.cast_fireball)
-					item = Object(x, y, '#', 'scroll of fireball', libtcod.yellow, item=item_component)
+					item = Object(x, y, '#', 'scroll of fireball', libtcod.dark_amber, always_visible=True, item=item_component)
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):

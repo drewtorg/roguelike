@@ -34,6 +34,7 @@ class Game:
 	@staticmethod
 	def new_game():
 		Game.state = 'playing'
+		Game.dungeon_level = 1
 		Game.game_msgs = []
 		Game.mouse = libtcod.Mouse()
 		Game.key = libtcod.Key()
@@ -101,19 +102,25 @@ class Game:
 	@staticmethod
 	def render_all():
 		Game.map.recompute_fov()
+
 		Game.render_walls_and_floor()
 		Game.render_all_objects()
-
 		libtcod.console_blit(Game.main_console, 0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, 0, 0, 0)
+
+		Game.render_panel()
+		libtcod.console_blit(Game.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
+
+		libtcod.console_flush()
+
+	@staticmethod
+	def render_panel():
 		libtcod.console_set_default_background(Game.panel, libtcod.black)
 		libtcod.console_clear(Game.panel)
 
 		Game.render_messages()
 		Game.render_bar(1, 1, Game.BAR_WIDTH, 'HP', Game.player.fighter.hp, Game.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
 		Game.render_look()
-
-		libtcod.console_blit(Game.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
-		libtcod.console_flush()
+		libtcod.console_print_ex(Game.panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level ' + str(Game.dungeon_level))
 
 	@staticmethod
 	def render_all_objects():
@@ -145,6 +152,11 @@ class Game:
 	def draw_object(object):
 		if Game.map.is_in_fov(object):
 			libtcod.console_set_default_foreground(Game.main_console, object.color)
+			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
+
+		elif object.always_visible and Game.map[object.x][object.y].explored:
+			darker = object.color * .65
+			libtcod.console_set_default_foreground(Game.main_console, darker)
 			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
 
 	@staticmethod
@@ -266,6 +278,7 @@ class Game:
 		Game.player.x = Game.map.origin[0]
 		Game.player.y = Game.map.origin[1]
 		Game.map.add_object(Game.player)
+		Game.dungeon_level += 1
 
 
 	@staticmethod
@@ -275,28 +288,31 @@ class Game:
 			return 'exit'
 
 		if Game.state == 'playing':
-			if Game.key.vk == libtcod.KEY_UP:
+			#movement keys
+			Game.map.fov_recompute = True
+			if Game.key.vk == libtcod.KEY_UP or Game.key.vk == libtcod.KEY_KP8:
 				Game.player.move_or_attack(0, -1)
-				Game.map.fov_recompute = True
-
-			elif Game.key.vk == libtcod.KEY_DOWN:
+			elif Game.key.vk == libtcod.KEY_DOWN or Game.key.vk == libtcod.KEY_KP2:
 				Game.player.move_or_attack(0, 1)
-				Game.map.fov_recompute= True
-
-			elif Game.key.vk == libtcod.KEY_LEFT:
+			elif Game.key.vk == libtcod.KEY_LEFT or Game.key.vk == libtcod.KEY_KP4:
 				Game.player.move_or_attack(-1, 0)
-				Game.map.fov_recompute = True
-
-			elif Game.key.vk == libtcod.KEY_RIGHT:
+			elif Game.key.vk == libtcod.KEY_RIGHT or Game.key.vk == libtcod.KEY_KP6:
 				Game.player.move_or_attack(1, 0)
-				Game.map.fov_recompute = True
+			elif Game.key.vk == libtcod.KEY_HOME or Game.key.vk == libtcod.KEY_KP7:
+				Game.player.move_or_attack(-1, -1)
+			elif Game.key.vk == libtcod.KEY_PAGEUP or Game.key.vk == libtcod.KEY_KP9:
+				Game.player.move_or_attack(1, -1)
+			elif Game.key.vk == libtcod.KEY_END or Game.key.vk == libtcod.KEY_KP1:
+				Game.player.move_or_attack(-1, 1)
+			elif Game.key.vk == libtcod.KEY_PAGEDOWN or Game.key.vk == libtcod.KEY_KP3:
+				Game.player.move_or_attack(1, 1)
+			elif Game.key.vk == libtcod.KEY_KP5:
+				Game.message('You wait.', libtcod.light_green)
+				pass
 
 			else:
+				Game.map.fov_recompute = False
 				key_char = chr(Game.key.c)
-
-				if key_char == 'w':
-					Game.message('You wait.', libtcod.light_green)
-					return 'wait'
 
 				if key_char == 'g':
 					for object in Game.map.objects:

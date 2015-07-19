@@ -4,13 +4,14 @@ import game
 from heapq import *
 
 class Object:
-	def __init__(self, x, y, char, name, color, blocks=False, fighter=None, ai=None, item=None):
+	def __init__(self, x, y, char, name, color, blocks=False, always_visible=False, fighter=None, ai=None, item=None):
 		self.x = x
 		self.y = y
 		self.char = char
 		self.name = name
 		self.color = color
 		self.blocks = blocks
+		self.always_visible = always_visible
 
 		self.fighter = fighter
 		if self.fighter:
@@ -79,10 +80,10 @@ def heuristic(a, b):
 def astar(start, goal):
 
 	# Allows diagonal movement of enemies
-	# neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1)]
+	neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1)]
 
 	# Doesn't allow diagonal movement of enemies
-	neighbors = [(0,1),(0,-1),(1,0),(-1,0)]
+	# neighbors = [(0,1),(0,-1),(1,0),(-1,0)]
 
 	close_set = set()
 	came_from = {}
