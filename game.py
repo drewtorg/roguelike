@@ -256,6 +256,15 @@ class Game:
 			object.update()
 
 	@staticmethod
+	def next_level():
+		Game.message('You take a moment to rest, and recover your strength.', libtcod.light_violet)
+		Game.player.fighter.heal(Game.player.fighter.max_hp / 2)
+
+		Game.message('You descend deeper into the heart of the dungeon...', libtcod.red)
+		Game.map.make_map()
+		Game.map.make_fov_map()
+
+	@staticmethod
 	def handle_keys():
 		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
 		if Game.key.vk == libtcod.KEY_ESCAPE:
@@ -292,14 +301,18 @@ class Game:
 							break
 
 				if key_char == 'i':
-					chosen_item = Game.inventory_menu('Press the key next to an item to use it, or any other to cancel.\n')
+					chosen_item = Game.inventory_menu('Press the key next to an item to use it.\n')
 					if chosen_item is not None:
 						chosen_item.use()
 
 				if key_char == 'd':
-					chosen_item = Game.inventory_menu('Press the key next to an item to drop it, or any other to cancel.\n')
+					chosen_item = Game.inventory_menu('Press the key next to an item to drop it.\n')
 					if chosen_item is not None:
 						chosen_item.drop()
+
+				if key_char == '<':  
+					if Game.map.stairs.x == Game.player.x and Game.map.stairs.y == Game.player.y:
+						Game.next_level()
 
 				return 'didnt-take-turn'
 
