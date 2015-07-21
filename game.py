@@ -25,6 +25,10 @@ class Game:
 	MSG_WIDTH = SCREEN_WIDTH - BAR_WIDTH
 	MSG_HEIGHT = PANEL_HEIGHT - 1
 	INVENTORY_WIDTH = 50
+	LEVEL_UP_BASE = 20
+	LEVEL_UP_FACTOR = 15
+	LEVEL_SCREEN_WIDTH = 40
+	CHARACTER_SCREEN_WIDTH = 30
 
 	libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
@@ -44,8 +48,9 @@ class Game:
 
 		libtcod.console_clear(Game.main_console)
 
-		_fighter_component = Components.Fighter(hp=30, defense=2, power=5, death_function=Components.player_death)
+		_fighter_component = Components.Fighter(hp=30, defense=2, power=5, xp=0, death_function=Components.player_death)
 		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
+		Game.player.level = 1
 		Game.map.add_object(Game.player)
 
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
@@ -280,6 +285,40 @@ class Game:
 		Game.map.add_object(Game.player)
 		Game.dungeon_level += 1
 
+	@staticmethod
+	def check_level_up():
+		level_up_exp = Game.get_exp_to_level()
+		
+		if Game.player.fighter.xp >= level_up_exp:
+			Game.player.level += 1
+			Game.player.fighter.xp -= level_up_exp
+			Game.message('Your battle skills grow stronger! You reached level ' + str(Game.player.level) + '!', libtcod.yellow)
+
+			choice = None
+			while choice is None:
+				choice = Game.menu('Level up! Choose a stat to raise:\n',
+					['Constitution (+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
+					'Strength (+1 attack, from (' + str(Game.player.fighter.power) + ')',
+					'Agility (+1 defense, from (' + str(Game.player.fighter.defense) + ')'], Game.LEVEL_SCREEN_WIDTH)
+			if choice == 0:
+				Game.player.fighter.max_hp += 20
+				Game.player.fighter.hp += 20
+			elif choice == 1:
+				Game.player.fighter.power += 1
+			elif choice == 2:
+				Game.player.fighter.defense += 1
+
+	@staticmethod
+	def get_exp_to_level():
+		return Game.LEVEL_UP_BASE + Game.player.level * Game.LEVEL_UP_FACTOR
+
+	@staticmethod
+	def try_pick_up():
+		for object in Game.map.objects:
+			if object.x == Game.player.x and object.y == Game.player.y and object.item:
+				object.item.pick_up()
+				return
+		Game.message('You wait.', libtcod.green)
 
 	@staticmethod
 	def handle_keys():
@@ -307,7 +346,7 @@ class Game:
 			elif Game.key.vk == libtcod.KEY_PAGEDOWN or Game.key.vk == libtcod.KEY_KP3:
 				Game.player.move_or_attack(1, 1)
 			elif Game.key.vk == libtcod.KEY_KP5:
-				Game.message('You wait.', libtcod.light_green)
+				Game.try_pick_up()
 				pass
 
 			else:
@@ -315,10 +354,7 @@ class Game:
 				key_char = chr(Game.key.c)
 
 				if key_char == 'g':
-					for object in Game.map.objects:
-						if object.x == Game.player.x and object.y == Game.player.y and object.item:
-							object.item.pick_up()
-							break
+					Game.try_pick_up()
 
 				if key_char == 'i':
 					chosen_item = Game.inventory_menu('Press the key next to an item to use it.\n')
@@ -334,6 +370,12 @@ class Game:
 					if Game.map.stairs.x == Game.player.x and Game.map.stairs.y == Game.player.y:
 						Game.next_level()
 
+				if key_char == 'c':
+					level_up_exp = Game.get_exp_to_level()
+					Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
+						'\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +
+						'\nAttack: ' + str(Game.player.fighter.power) + '\nDefense: ' + str(Game.player.fighter.defense), Game.CHARACTER_SCREEN_WIDTH)
+
 				return 'didnt-take-turn'
 
 	@staticmethod
@@ -344,6 +386,8 @@ class Game:
 			libtcod.console_set_default_foreground(0, Game.COLOR_LIT)
 
 			Game.render_all()
+
+			Game.check_level_up()
 
 			player_action = Game.handle_keys()
 

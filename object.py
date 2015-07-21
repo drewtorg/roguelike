@@ -74,6 +74,10 @@ class Object:
 	def distance(self, x, y):
 		return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
 
+	def wander(self):
+		self.move(libtcod.random_get_int(0, -1, 1), libtcod.random_get_int(0, -1, 1))
+
+
 def heuristic(a, b):
 	return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
 

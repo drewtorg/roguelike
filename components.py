@@ -5,11 +5,12 @@ import game
 CONFUSE_NUM_TURNS = 10
 
 class Fighter:
-	def __init__(self, hp, defense, power, death_function=None):
+	def __init__(self, hp, defense, power, xp, death_function=None):
 		self.max_hp = hp
 		self.hp = hp
 		self.defense = defense
 		self.power = power
+		self.xp = xp
 		self.death_function = death_function
 
 	def take_damage(self, damage):
@@ -21,13 +22,15 @@ class Fighter:
 			function = self.death_function
 			if function is not None:
 				function(self.owner)
+			return self.xp
+		return 0
 
 	def attack(self, target):
-		damage = self.power - target.fighter.defense
+		damage = self.power - target.fighter.defense	#################### TODO: real fighting logic ###########################
 
 		if damage > 0:
 			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
-			target.fighter.take_damage(damage)
+			self.xp += target.fighter.take_damage(damage)
 		else:
 			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
 
@@ -53,18 +56,36 @@ class BasicMonster:
 		elif game.Game.player.fighter.hp > 0:
 				monster.fighter.attack(game.Game.player)
 
+class WanderingMonster:
+	def __init__(self):
+		self.current_path = []
+
+	def take_turn(self):
+		monster = self.owner
+
+		if monster.distance_to(game.Game.player) >= 2:
+			monster.try_move_towards(game.Game.player)
+
+		elif game.Game.player.fighter.hp > 0:
+				monster.fighter.attack(game.Game.player)
+
+		if self.current_path == []:
+			monster.wander()
+
+
 class ConfusedMonster:
 	def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
 		self.old_ai = old_ai
 		self.num_turns = num_turns
+		monster = self.owner
 
 	def take_turn(self):
 		if self.num_turns > 0:
-			self.owner.move(libtcod.random_get_int(0, -1, 1), libtcod.random_get_int(0, -1, 1))
+			monster.wander()
 			self.num_turns -= 1
 
 		else:
-			self.owner.ai = self.old_ai
+			monster.ai = self.old_ai
 			game.Game.message('The ' + self.owner.name + ' is no longer confused!', libtcod.red)
 
 
@@ -148,7 +169,7 @@ def player_death(player):
 	player.color = libtcod.dark_red
 
 def monster_death(monster):
-	game.Game.message(monster.name.capitalize() + ' is dead!', libtcod.orange)
+	game.Game.message(monster.name.capitalize() + ' is dead! You gain ' + str(monster.fighter.xp) + ' experience points.', libtcod.orange)
 
 	monster.char = '%'
 	monster.color = libtcod.dark_red
