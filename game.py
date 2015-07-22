@@ -25,8 +25,8 @@ class Game:
 	MSG_WIDTH = SCREEN_WIDTH - BAR_WIDTH
 	MSG_HEIGHT = PANEL_HEIGHT - 1
 	INVENTORY_WIDTH = 50
-	LEVEL_UP_BASE = 20
-	LEVEL_UP_FACTOR = 15
+	LEVEL_UP_BASE = 200
+	LEVEL_UP_FACTOR = 150
 	LEVEL_SCREEN_WIDTH = 40
 	CHARACTER_SCREEN_WIDTH = 30
 
@@ -190,11 +190,13 @@ class Game:
 
 		x = Game.SCREEN_WIDTH/2 - width/2
 		y = Game.SCREEN_HEIGHT/2 - height/2
-		libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7) #0.7 is the transparency
 
+		libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7) #0.7 is the transparency
 		libtcod.console_flush()
+
 		key = libtcod.console_wait_for_keypress(True)
 		key = libtcod.console_wait_for_keypress(True)
+
 		index = key.c - ord('a')
 		if index >= 0 and index < len(options):
 			return index
@@ -243,18 +245,35 @@ class Game:
 
 	@staticmethod
 	def target_tile(max_range=None):
-		while True:
-			libtcod.console_flush()
-			libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
+		box = libtcod.console_new(1, 1)
+		x = Game.player.x
+		y = Game.player.y
+		libtcod.console_set_default_background(box, libtcod.orange)
+		libtcod.console_clear(box)
+		key = Game.key
+
+		while (x, y) != (0, 0):
 			Game.render_all()
 
-			(x, y) = (Game.mouse.cx, Game.mouse.cy)
+			libtcod.console_blit(box, 0, 0, 1, 1, 0, x, y, 1.0, 0.5) #0.7 is the transparency
+			libtcod.console_flush()
 
-			if (Game.mouse.lbutton_pressed and Game.map.is_tile_in_fov(x, y)) and (max_range is None or Game.player.distance(x, y) <= max_range):
-				return (x, y)
+			key = libtcod.console_wait_for_keypress(True)
+			key = libtcod.console_wait_for_keypress(True)
 
-			if Game.mouse.rbutton_pressed or Game.key.vk == libtcod.KEY_ESCAPE:
+			if key.vk == libtcod.KEY_ESCAPE:
 				return (None, None)
+
+			direction = Game.getDirection(key)
+			if direction is not None:
+				x += direction[0]
+				y += direction[1]
+
+			if direction == (0, 0):
+				if Game.map.is_tile_in_fov(x, y) and (max_range is None or Game.player.distance(x, y) <= max_range):
+					return (x, y)
+				else:
+					Game.message('That is out of range.', libtcod.red)
 
 	@staticmethod
 	def target_monster(max_range=None):
@@ -288,7 +307,7 @@ class Game:
 	@staticmethod
 	def check_level_up():
 		level_up_exp = Game.get_exp_to_level()
-		
+
 		if Game.player.fighter.xp >= level_up_exp:
 			Game.player.level += 1
 			Game.player.fighter.xp -= level_up_exp
@@ -321,35 +340,41 @@ class Game:
 		Game.message('You wait.', libtcod.green)
 
 	@staticmethod
+	def getDirection(key):
+		if key.vk == libtcod.KEY_UP or key.vk == libtcod.KEY_KP8:
+			return (0, -1)
+		elif key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_KP2:
+			return (0, 1)
+		elif key.vk == libtcod.KEY_LEFT or key.vk == libtcod.KEY_KP4:
+			return (-1, 0)
+		elif key.vk == libtcod.KEY_RIGHT or key.vk == libtcod.KEY_KP6:
+			return (1, 0)
+		elif key.vk == libtcod.KEY_HOME or key.vk == libtcod.KEY_KP7:
+			return (-1, -1)
+		elif key.vk == libtcod.KEY_PAGEUP or key.vk == libtcod.KEY_KP9:
+			return (1, -1)
+		elif key.vk == libtcod.KEY_END or key.vk == libtcod.KEY_KP1:
+			return (-1, 1)
+		elif key.vk == libtcod.KEY_PAGEDOWN or key.vk == libtcod.KEY_KP3:
+			return (1, 1)
+		elif key.vk == libtcod.KEY_KP5 or key.vk == libtcod.KEY_ENTER:
+			return (0, 0)
+		return None
+
+	@staticmethod
 	def handle_keys():
-		libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS|libtcod.EVENT_MOUSE, Game.key, Game.mouse)
+		Game.key = libtcod.console_wait_for_keypress(True)
+		Game.key = libtcod.console_wait_for_keypress(True)
+
 		if Game.key.vk == libtcod.KEY_ESCAPE:
 			return 'exit'
 
 		if Game.state == 'playing':
 			#movement keys
 			Game.map.fov_recompute = True
-			if Game.key.vk == libtcod.KEY_UP or Game.key.vk == libtcod.KEY_KP8:
-				Game.player.move_or_attack(0, -1)
-			elif Game.key.vk == libtcod.KEY_DOWN or Game.key.vk == libtcod.KEY_KP2:
-				Game.player.move_or_attack(0, 1)
-			elif Game.key.vk == libtcod.KEY_LEFT or Game.key.vk == libtcod.KEY_KP4:
-				Game.player.move_or_attack(-1, 0)
-			elif Game.key.vk == libtcod.KEY_RIGHT or Game.key.vk == libtcod.KEY_KP6:
-				Game.player.move_or_attack(1, 0)
-			elif Game.key.vk == libtcod.KEY_HOME or Game.key.vk == libtcod.KEY_KP7:
-				Game.player.move_or_attack(-1, -1)
-			elif Game.key.vk == libtcod.KEY_PAGEUP or Game.key.vk == libtcod.KEY_KP9:
-				Game.player.move_or_attack(1, -1)
-			elif Game.key.vk == libtcod.KEY_END or Game.key.vk == libtcod.KEY_KP1:
-				Game.player.move_or_attack(-1, 1)
-			elif Game.key.vk == libtcod.KEY_PAGEDOWN or Game.key.vk == libtcod.KEY_KP3:
-				Game.player.move_or_attack(1, 1)
-			elif Game.key.vk == libtcod.KEY_KP5:
-				Game.try_pick_up()
-				pass
+			direction = Game.getDirection(Game.key)
 
-			else:
+			if direction is None:
 				Game.map.fov_recompute = False
 				key_char = chr(Game.key.c)
 
@@ -377,6 +402,14 @@ class Game:
 						'\nAttack: ' + str(Game.player.fighter.power) + '\nDefense: ' + str(Game.player.fighter.defense), Game.CHARACTER_SCREEN_WIDTH)
 
 				return 'didnt-take-turn'
+
+			elif direction == (0, 0):
+				Game.try_pick_up()
+				pass
+
+			else:
+				Game.player.move_or_attack(direction[0], direction[1])
+
 
 	@staticmethod
 	def run():

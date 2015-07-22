@@ -77,9 +77,10 @@ class ConfusedMonster:
 	def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
 		self.old_ai = old_ai
 		self.num_turns = num_turns
-		monster = self.owner
 
 	def take_turn(self):
+		monster = self.owner
+
 		if self.num_turns > 0:
 			monster.wander()
 			self.num_turns -= 1
@@ -117,8 +118,8 @@ class Item:
 
 ################################# ITEM FUNCTIONS ###############################
 HEAL_AMOUNT = 4
-lightning_RANGE = 5
-lightning_DAMAGE = 20
+LIGHTNING_RANGE = 5
+LIGHTNING_DAMAGE = 20
 CONFUSE_RANGE = 8
 FIREBALL_RADIUS = 3
 FIREBALL_DAMAGE = 12
@@ -131,16 +132,17 @@ def cast_heal():
 	game.Game.player.fighter.heal(HEAL_AMOUNT)
 
 def cast_lightning():
-	monster = game.Game.map.closest_monster(lightning_RANGE)
+	monster = game.Game.map.closest_monster(LIGHTNING_RANGE)
 	if monster is None:
 		game.Game.message('No enemy is close enough to strike.', libtcod.red)
 		return 'cancelled'
-	game.Game.message('A lightning bolt strikes the ' + monster.name + ' with a loud thunder! The damage is ' + str(lightning_DAMAGE) + ' hit points.', libtcod.light_blue)
-	monster.fighter.take_damage(lightning_DAMAGE)
+	game.Game.message('A lightning bolt strikes the ' + monster.name + ' with a loud thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.', libtcod.light_blue)
+	monster.fighter.take_damage(LIGHTNING_DAMAGE)
 
 def cast_confuse():
-	game.Game.message('Left-click an enemy to confuse it, or right-click to cancel.', libtcod.light_cyan)
-	monster =  game.Game.target_monster(CONFUSE_RANGE)
+	game.Game.message('Hit enter on an enemy to confuse it, or escape to cancel.', libtcod.light_cyan)
+	monster = game.Game.target_monster(CONFUSE_RANGE)
+
 	if monster is None:
 		return 'cancelled'
 	old_ai = monster.ai
@@ -149,7 +151,7 @@ def cast_confuse():
 	game.Game.message('The eyes of the ' + monster.name + ' look vacant, as he starts to stumble around!', libtcod.light_green)
 
 def cast_fireball():
-	game.Game.message('Left-click a target tile for the fireball, or right-click to cancel.', libtcod.light_cyan)
+	game.Game.message('Hit enter on target tile for the fireball, or escape to cancel.', libtcod.light_cyan)
 	(x, y) = game.Game.target_tile()
 	if x is None:
 		return 'cancelled'
