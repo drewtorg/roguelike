@@ -48,7 +48,7 @@ class Game:
 
 		libtcod.console_clear(Game.main_console)
 
-		_fighter_component = Components.Fighter(hp=30, defense=2, power=5, xp=0, death_function=Components.player_death)
+		_fighter_component = Components.Fighter(hp=30, dexterity=2, accuracy=20, power=5, xp=0, death_function=Components.player_death)
 		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
 		Game.player.level = 1
 		Game.map.add_object(Game.player)
@@ -318,7 +318,7 @@ class Game:
 				choice = Game.menu('Level up! Choose a stat to raise:\n',
 					['Constitution (+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
 					'Strength (+1 attack, from (' + str(Game.player.fighter.power) + ')',
-					'Agility (+1 defense, from (' + str(Game.player.fighter.defense) + ')'], Game.LEVEL_SCREEN_WIDTH)
+					'Agility (+1 dexterity, from (' + str(Game.player.fighter.dexterity) + ')'], Game.LEVEL_SCREEN_WIDTH)
 
 			if choice == 0:
 				Game.player.fighter.max_hp += 20
@@ -326,7 +326,7 @@ class Game:
 			elif choice == 1:
 				Game.player.fighter.power += 1
 			elif choice == 2:
-				Game.player.fighter.defense += 1
+				Game.player.fighter.dexterity += 1
 			Game.render_all()
 
 	@staticmethod
@@ -401,7 +401,7 @@ class Game:
 					level_up_exp = Game.get_exp_to_level()
 					Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
 						'\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +
-						'\nAttack: ' + str(Game.player.fighter.power) + '\nDefense: ' + str(Game.player.fighter.defense), Game.CHARACTER_SCREEN_WIDTH)
+						'\nAttack: ' + str(Game.player.fighter.power) + '\nDexterity: ' + str(Game.player.fighter.dexterity), Game.CHARACTER_SCREEN_WIDTH)
 
 				return 'didnt-take-turn'
 

@@ -119,11 +119,11 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				if libtcod.random_get_int(0, 0, 100) < 80:
-					fighter_component = Components.Fighter(hp=10, defense=0, power=3, xp=35, death_function=Components.monster_death)
+					fighter_component = Components.Fighter(hp=8, dexterity=3, accuracy=15, power=3, xp=35, death_function=Components.monster_death)
 					ai_component = Components.WanderingMonster()
 					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
-					fighter_component = Components.Fighter(hp=16, defense=1, power=4, xp=100, death_function=Components.monster_death)
+					fighter_component = Components.Fighter(hp=14, dexterity=2, accuracy=15, power=4, xp=100, death_function=Components.monster_death)
 					ai_component = Components.WanderingMonster()
 					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, blocks=True, fighter=fighter_component, ai=ai_component)
 

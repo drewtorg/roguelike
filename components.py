@@ -5,11 +5,12 @@ import game
 CONFUSE_NUM_TURNS = 10
 
 class Fighter:
-	def __init__(self, hp, defense, power, xp, death_function=None):
+	def __init__(self, hp, dexterity, accuracy, power, xp, death_function=None):
 		self.max_hp = hp
 		self.hp = hp
-		self.defense = defense
+		self.dexterity = dexterity
 		self.power = power
+		self.accuracy = accuracy
 		self.xp = xp
 		self.death_function = death_function
 
@@ -26,13 +27,18 @@ class Fighter:
 		return 0
 
 	def attack(self, target):
-		damage = self.power - target.fighter.defense	#################### TODO: real fighting logic ###########################
+		hit = libtcod.random_get_int(0, 1, self.accuracy) > target.fighter.dexterity
 
-		if damage > 0:
-			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
-			self.xp += target.fighter.take_damage(damage)
+		if hit:
+			damage = libtcod.random_get_int(0, 1, self.power)
+
+			if damage > 0:
+				game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
+				self.xp += target.fighter.take_damage(damage)
+			else:
+				game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
 		else:
-			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
+			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' and misses!')
 
 	def heal(self, amount):
 		self.hp += amount
@@ -67,7 +73,7 @@ class WanderingMonster:
 			monster.try_move_towards(game.Game.player)
 
 		elif game.Game.player.fighter.hp > 0:
-				monster.fighter.attack(game.Game.player)
+			monster.fighter.attack(game.Game.player)
 
 		if self.current_path == []:
 			monster.wander()
