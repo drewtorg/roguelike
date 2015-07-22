@@ -308,7 +308,7 @@ class Game:
 	def check_level_up():
 		level_up_exp = Game.get_exp_to_level()
 
-		if Game.player.fighter.xp >= level_up_exp:
+		while Game.player.fighter.xp >= level_up_exp:
 			Game.player.level += 1
 			Game.player.fighter.xp -= level_up_exp
 			Game.message('Your battle skills grow stronger! You reached level ' + str(Game.player.level) + '!', libtcod.yellow)
@@ -319,6 +319,7 @@ class Game:
 					['Constitution (+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
 					'Strength (+1 attack, from (' + str(Game.player.fighter.power) + ')',
 					'Agility (+1 defense, from (' + str(Game.player.fighter.defense) + ')'], Game.LEVEL_SCREEN_WIDTH)
+
 			if choice == 0:
 				Game.player.fighter.max_hp += 20
 				Game.player.fighter.hp += 20
@@ -326,6 +327,7 @@ class Game:
 				Game.player.fighter.power += 1
 			elif choice == 2:
 				Game.player.fighter.defense += 1
+			Game.render_all()
 
 	@staticmethod
 	def get_exp_to_level():
