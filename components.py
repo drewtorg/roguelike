@@ -30,7 +30,7 @@ class Fighter:
 		hit = libtcod.random_get_int(0, 1, self.accuracy) > target.fighter.dexterity
 
 		if hit:
-			damage = libtcod.random_get_int(0, 1, self.power)
+			damage = libtcod.random_get_int(0, self.power/2, self.power)
 
 			if damage > 0:
 				game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
@@ -123,12 +123,12 @@ class Item:
 				game.Game.inventory.remove(self.owner)
 
 ################################# ITEM FUNCTIONS ###############################
-HEAL_AMOUNT = 4
+HEAL_AMOUNT = 40
 LIGHTNING_RANGE = 5
-LIGHTNING_DAMAGE = 20
+LIGHTNING_DAMAGE = 40
 CONFUSE_RANGE = 8
 FIREBALL_RADIUS = 3
-FIREBALL_DAMAGE = 12
+FIREBALL_DAMAGE = 25
 
 def cast_heal():
 	if game.Game.player.fighter.has_max_hp():

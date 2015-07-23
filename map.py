@@ -7,8 +7,12 @@ import game
 
 class Map:
 
-	MAX_ROOM_MONSTERS = 3
-	MAX_ROOM_ITEMS = 2
+	MAX_ROOM_MONSTERS = [[2, 1], [3, 4], [5, 6]]
+	MAX_ROOM_ITEMS = [[1, 1], [2, 4]]
+	LIGHTNING_CHANCE = [[25, 4]]
+	FIREBALL_CHANCE = [[25, 6]]
+	CONFUSE_CHANCE = [[10, 2]]
+	TROLL_CHANCE = [[15, 3], [30, 5], [60, 7]]
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
 	MAX_ROOMS = 30
@@ -22,6 +26,8 @@ class Map:
 		self.height = height
 		self.width = width
 		self.objects = []
+		self.monster_chances = {}
+		self.item_chances = {}
 		self.make_map()
 		self.fov_recompute = True
 		self.fov_map = self.make_fov_map()
@@ -40,6 +46,13 @@ class Map:
 
 		rooms = []
 		num_rooms = 0
+		self.item_chances['heal'] = 35
+		self.item_chances['lightning'] = from_dungeon_level(Map.LIGHTNING_CHANCE)
+		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
+		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
+
+		self.monster_chances['orc'] = 80
+		self.monster_chances['troll'] = from_dungeon_level(Map.TROLL_CHANCE)
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -85,10 +98,10 @@ class Map:
 		self.send_to_back(self.stairs)
 
 	def place_objects(self, room):
-		num_monsters = libtcod.random_get_int(0, 0, Map.MAX_ROOM_MONSTERS)
+		num_monsters = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_MONSTERS))
 		self.place_monsters(room, num_monsters)
 
-		num_items = libtcod.random_get_int(0, 0, Map.MAX_ROOM_ITEMS)
+		num_items = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_ITEMS))
 		self.place_items(room, num_items)
 
 	def place_items(self, room, num_items):
@@ -97,17 +110,17 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			if not self.is_blocked(x, y):
-				dice = libtcod.random_get_int(0, 0, 100)
-				if dice < 70:
+				choice = random_choice(self.item_chances)
+				if choice == 'heal':
 					item_component = Components.Item(use_function=Components.cast_heal)
 					item = Object(x, y, '!', 'healing potion', libtcod.violet, always_visible=True, item=item_component)
-				elif dice < 70 + 10:
+				elif choice == 'lightning':
 					item_component = Components.Item(use_function=Components.cast_lightning)
 					item = Object(x, y, '#', 'scroll of lightning', libtcod.dark_amber, always_visible=True, item=item_component)
-				elif dice < 70 + 10 + 10:
+				elif choice == 'fireball':
 					item_component = Components.Item(use_function=Components.cast_confuse)
 					item = Object(x, y, '#', 'scroll of confusion', libtcod.dark_amber, always_visible=True, item=item_component)
-				else:
+				elif choice == 'confuse':
 					item_component = Components.Item(use_function=Components.cast_fireball)
 					item = Object(x, y, '#', 'scroll of fireball', libtcod.dark_amber, always_visible=True, item=item_component)
 				self.objects.insert(0, item)
@@ -118,12 +131,13 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			if not self.is_blocked(x, y):
-				if libtcod.random_get_int(0, 0, 100) < 80:
-					fighter_component = Components.Fighter(hp=8, dexterity=3, accuracy=15, power=3, xp=35, death_function=Components.monster_death)
+				choice = random_choice(self.monster_chances)
+				if choice == 'orc':
+					fighter_component = Components.Fighter(hp=20, dexterity=2, accuracy=20, power=4, xp=35, death_function=Components.monster_death)
 					ai_component = Components.WanderingMonster()
 					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, blocks=True, fighter=fighter_component, ai=ai_component)
-				else:
-					fighter_component = Components.Fighter(hp=14, dexterity=2, accuracy=15, power=4, xp=100, death_function=Components.monster_death)
+				elif choice == 'troll':
+					fighter_component = Components.Fighter(hp=30, dexterity=4, accuracy=20, power=8, xp=100, death_function=Components.monster_death)
 					ai_component = Components.WanderingMonster()
 					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, blocks=True, fighter=fighter_component, ai=ai_component)
 
@@ -201,3 +215,27 @@ class Map:
 			if object.x == x and object.y == y:
 				return object
 		return None
+
+def random_choice_index(chances):
+	dice = libtcod.random_get_int(0, 1, sum(chances))
+
+	running_sum = 0
+	choice = 0
+	for w in chances:
+		running_sum += w
+
+		if dice <= running_sum:
+			return choice
+		choice += 1
+
+def random_choice(chances_dict):
+	chances = chances_dict.values()
+	strings = chances_dict.keys()
+
+	return strings[random_choice_index(chances)]
+
+def from_dungeon_level(table):
+	for (value, level) in reversed(table):
+		if game.Game.dungeon_level >= level:
+			return value
+	return 0

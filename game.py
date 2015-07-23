@@ -48,7 +48,7 @@ class Game:
 
 		libtcod.console_clear(Game.main_console)
 
-		_fighter_component = Components.Fighter(hp=30, dexterity=2, accuracy=20, power=5, xp=0, death_function=Components.player_death)
+		_fighter_component = Components.Fighter(hp=100, dexterity=4, accuracy=20, power=4, xp=0, death_function=Components.player_death)
 		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
 		Game.player.level = 1
 		Game.map.add_object(Game.player)
