@@ -28,7 +28,8 @@ class Object:
 	def __str__(self):
 		newStr = 'Name: ' + self.name + '\n'
 		newStr += 'Char: ' + self.char + '\n'
-		newStr += 'Location: ' + '(' + str(self.x) + ', ' + str(self.y) + ')'
+		newStr += 'Location: ' + '(' + str(self.x) + ', ' + str(self.y) + ')\n'
+		newStr += 'Color: ' + str(self.color) + '\n'
 		return newStr;
 
 	def update(self):

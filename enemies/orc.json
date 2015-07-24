@@ -2,7 +2,10 @@
     "name" : "Orc",
     "char" : "o",
     "blocks" : "True",
-    "color" : "libtcod.desaturated_green",
+    "r" : 63,
+    "g" : 127,
+    "b" : 63,
+    "spawn_chance" : [[80, 0]],
     "fighter" : {
         "hp" : 20,
         "dexterity" : 2,

@@ -4,6 +4,7 @@ import libtcodpy as libtcod
 from object import Object
 import components as Components
 import game
+from decoder import Decoder
 
 class Map:
 
@@ -12,6 +13,7 @@ class Map:
 	LIGHTNING_CHANCE = [[25, 4]]
 	FIREBALL_CHANCE = [[25, 6]]
 	CONFUSE_CHANCE = [[10, 2]]
+	# TROLL_CHANCE = [[150, 1], [30, 5], [60, 7]]
 	TROLL_CHANCE = [[15, 3], [30, 5], [60, 7]]
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
@@ -21,6 +23,9 @@ class Map:
 	TORCH_RADIUS = 5
 	COLOR_LIT = libtcod.lighter_grey
 	COLOR_UNLIT = libtcod.dark_grey
+
+	enemyDecoder = Decoder('enemies/')
+	itemDecoder = Decoder('items/')
 
 	def __init__(self, width, height):
 		self.height = height
@@ -51,7 +56,7 @@ class Map:
 		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
 		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
 
-		self.monster_chances['orc'] = 80
+		self.monster_chances['orc'] = from_dungeon_level(Map.enemyDecoder.decode_spawn_chance('orc.json'))
 		self.monster_chances['troll'] = from_dungeon_level(Map.TROLL_CHANCE)
 
 		for r in range(Map.MAX_ROOMS):
@@ -133,9 +138,7 @@ class Map:
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.monster_chances)
 				if choice == 'orc':
-					fighter_component = Components.Fighter(hp=20, dexterity=2, accuracy=20, power=4, xp=35, death_function=Components.monster_death)
-					ai_component = Components.WanderingMonster()
-					monster = Object(x, y, 'o', 'Orc', libtcod.desaturated_green, blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Map.enemyDecoder.decode_monster_from_file('orc.json', x, y)
 				elif choice == 'troll':
 					fighter_component = Components.Fighter(hp=30, dexterity=4, accuracy=20, power=8, xp=100, death_function=Components.monster_death)
 					ai_component = Components.WanderingMonster()
