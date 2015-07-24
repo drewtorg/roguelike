@@ -1,0 +1,13 @@
+{
+    "name" : "Orc",
+    "char" : "o",
+    "blocks" : "True",
+    "color" : "libtcod.desaturated_green",
+    "fighter" : {
+        "hp" : 20,
+        "dexterity" : 2,
+        "accuracy" : 20,
+        "power" : 4,
+        "xp" : 35
+    }
+}
