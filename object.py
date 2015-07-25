@@ -1,10 +1,11 @@
 import libtcodpy as libtcod
 import math
 import game
+import components as Components
 from heapq import *
 
 class Object:
-	def __init__(self, x, y, char, name, color, blocks=False, always_visible=False, fighter=None, ai=None, item=None):
+	def __init__(self, x, y, char, name, color, blocks=False, always_visible=False, fighter=None, ai=None, item=None, equipment=None):
 		self.x = x
 		self.y = y
 		self.char = char
@@ -23,6 +24,12 @@ class Object:
 
 		self.item = item
 		if self.item:
+			self.item.owner = self
+
+		self.equipment = equipment
+		if self.equipment:
+			self.equipment.owner = self
+			self.item = Components.Item()
 			self.item.owner = self
 
 	def __str__(self):

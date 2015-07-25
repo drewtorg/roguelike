@@ -6,13 +6,33 @@ CONFUSE_NUM_TURNS = 10
 
 class Fighter:
 	def __init__(self, hp, dexterity, accuracy, power, xp, death_function=None):
-		self.max_hp = hp
+		self.base_max_hp = hp
 		self.hp = hp
-		self.dexterity = dexterity
-		self.power = power
-		self.accuracy = accuracy
+		self.base_dexterity = dexterity
+		self.base_power = power
+		self.base_accuracy = accuracy
 		self.xp = xp
 		self.death_function = death_function
+
+	@property
+	def power(self):
+		bonus = sum(equipment.power_bonus for equipment in self.get_all_equipped())
+		return self.base_power + bonus
+
+	@property
+	def dexterity(self):
+		bonus = sum(equipment.dexterity_bonus for equipment in self.get_all_equipped())
+		return self.base_dexterity + bonus
+
+	@property
+	def max_hp(self):
+		bonus = sum(equipment.max_hp_bonus for equipment in self.get_all_equipped())
+		return self.base_max_hp + bonus
+
+	@property
+	def accuracy(self):
+		bonus = sum(equipment.accuracy_bonus for equipment in self.get_all_equipped())
+		return self.base_accuracy + bonus
 
 	def take_damage(self, damage):
 		if damage > 0:
@@ -47,6 +67,16 @@ class Fighter:
 
 	def has_max_hp(self):
 		return self.hp == self.max_hp
+
+	def get_all_equipped(self):
+		if self.owner == game.Game.player:
+			equipped_list = []
+			for item in game.Game.inventory:
+				if item.equipment and item.equipment.is_equipped:
+					equipped_list.append(item.equipment)
+			return equipped_list
+		else:
+			return []
 
 class BasicMonster:
 	def __init__(self):
@@ -108,7 +138,14 @@ class Item:
 			game.Game.map.remove_object(self.owner)
 			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)
 
+			equipment = self.owner.equipment
+			if equipment and self.owner.equipment.get_equipped_in_slot(equipment.slot) is None:
+				equipment.equip()
+
 	def drop(self):
+		if self.owner.equipment:
+			self.owner.equipment.dequip()
+
 		game.Game.inventory.remove(self.owner)
 		self.owner.x = game.Game.player.x
 		self.owner.y = game.Game.player.y
@@ -116,6 +153,10 @@ class Item:
 		game.Game.message('You dropped a ' + self.owner.name + '.', libtcod.yellow)
 
 	def use(self):
+		if self.owner.equipment:
+			self.owner.equipment.toggle_equip()
+			return
+
 		if self.use_function is None:
 			game.Game.message('The ' + self.owner.name + ' cannot be used.')
 		else:

@@ -3,11 +3,11 @@ from tile import Tile
 from object import Object
 from rect import Rect
 from map import Map
+from equipment import Equipment
 import components as Components
 import textwrap
 
 class Game:
-
 	SCREEN_WIDTH = 80
 	SCREEN_HEIGHT = 50
 	LIMIT_FPS = 20
@@ -52,6 +52,11 @@ class Game:
 		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
 		Game.player.level = 1
 		Game.map.add_object(Game.player)
+
+		_equipment_component = Equipment(slot='right hand', power_bonus=2)
+		_obj = Object(0, 0, '-', 'dagger', libtcod.sky, equipment=_equipment_component)
+		Game.inventory.append(_obj)
+		_equipment_component.equip()
 
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
 
@@ -207,7 +212,12 @@ class Game:
 		if len(Game.inventory) == 0:
 			options = ['Inventory is empty.']
 		else:
-			options = [item.name for item in Game.inventory]
+			options = []
+			for item in Game.inventory:
+				text = item.name
+				if item.equipment and item.equipment.is_equipped:
+					text = text + ' (on ' + item.equipment.slot + ')'
+				options.append(text)
 
 		index = Game.menu(header, options, Game.INVENTORY_WIDTH)
 		if index is None or len(Game.inventory) == 0:
@@ -321,12 +331,12 @@ class Game:
 					'Agility (+1 dexterity, from (' + str(Game.player.fighter.dexterity) + ')'], Game.LEVEL_SCREEN_WIDTH)
 
 			if choice == 0:
-				Game.player.fighter.max_hp += 20
+				Game.player.fighter.base_max_hp += 20
 				Game.player.fighter.hp += 20
 			elif choice == 1:
-				Game.player.fighter.power += 1
+				Game.player.fighter.base_power += 1
 			elif choice == 2:
-				Game.player.fighter.dexterity += 1
+				Game.player.fighter.base_dexterity += 1
 			Game.render_all()
 
 	@staticmethod

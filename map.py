@@ -4,6 +4,7 @@ import libtcodpy as libtcod
 from object import Object
 import components as Components
 import game
+import equipment
 from decoder import Decoder
 
 class Map:
@@ -52,6 +53,8 @@ class Map:
 		rooms = []
 		num_rooms = 0
 		self.item_chances['heal'] = 35
+		self.item_chances['sword'] = 35
+		self.item_chances['shield'] = 35
 		self.item_chances['lightning'] = from_dungeon_level(Map.LIGHTNING_CHANCE)
 		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
 		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
@@ -128,6 +131,12 @@ class Map:
 				elif choice == 'confuse':
 					item_component = Components.Item(use_function=Components.cast_fireball)
 					item = Object(x, y, '#', 'scroll of fireball', libtcod.dark_amber, always_visible=True, item=item_component)
+				elif choice == 'sword':
+					equipment_component = equipment.Equipment(slot='right hand', power_bonus=3)
+					item = Object(x, y, '/', 'sword', libtcod.sky, always_visible=True, equipment=equipment_component)
+				elif choice == 'shield':
+						equipment_component = equipment.Equipment(slot='left hand', dexterity_bonus=3)
+						item = Object(x, y, '[', 'shield', libtcod.darker_orange, always_visible=True, equipment=equipment_component)
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):
