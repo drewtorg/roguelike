@@ -5,7 +5,10 @@ from object import Object
 import components as Components
 import game
 import equipment
-from decoder import Decoder
+import decoder
+
+enemyDecoder = decoder.EnemyDecoder('enemies/')
+itemDecoder = decoder.ItemDecoder('items/')
 
 class Map:
 
@@ -14,8 +17,6 @@ class Map:
 	LIGHTNING_CHANCE = [[25, 4]]
 	FIREBALL_CHANCE = [[25, 6]]
 	CONFUSE_CHANCE = [[10, 2]]
-	# TROLL_CHANCE = [[150, 1], [30, 5], [60, 7]]
-	TROLL_CHANCE = [[15, 3], [30, 5], [60, 7]]
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
 	MAX_ROOMS = 30
@@ -25,8 +26,6 @@ class Map:
 	COLOR_LIT = libtcod.lighter_grey
 	COLOR_UNLIT = libtcod.dark_grey
 
-	enemyDecoder = Decoder('enemies/')
-	itemDecoder = Decoder('items/')
 
 	def __init__(self, width, height):
 		self.height = height
@@ -59,8 +58,9 @@ class Map:
 		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
 		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
 
-		self.monster_chances['orc'] = from_dungeon_level(Map.enemyDecoder.decode_spawn_chance('orc.json'))
-		self.monster_chances['troll'] = from_dungeon_level(Map.TROLL_CHANCE)
+		self.monster_chances = enemyDecoder.decode_all_spawn_chances()
+		for chance in self.monster_chances:
+			self.monster_chances[chance] = from_dungeon_level(self.monster_chances[chance])
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -146,13 +146,7 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.monster_chances)
-				if choice == 'orc':
-					monster = Map.enemyDecoder.decode_monster_from_file('orc.json', x, y)
-				elif choice == 'troll':
-					fighter_component = Components.Fighter(hp=30, dexterity=4, accuracy=20, power=8, xp=100, death_function=Components.monster_death)
-					ai_component = Components.WanderingMonster()
-					monster = Object(x, y, 'T', 'Troll', libtcod.darker_green, blocks=True, fighter=fighter_component, ai=ai_component)
-
+				monster = enemyDecoder.decode_enemy(choice, x, y)
 				self.add_object(monster)
 
 	def create_room(self, room):

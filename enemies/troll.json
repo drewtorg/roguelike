@@ -1,0 +1,16 @@
+{
+    "name" : "Troll",
+    "char" : "T",
+    "blocks" : "True",
+    "r" : 0,
+    "g" : 127,
+    "b" : 0,
+    "spawn_chance" : [[15, 3], [30, 5], [60, 7]],
+    "fighter" : {
+        "hp" : 30,
+        "dexterity" : 4,
+        "accuracy" : 15,
+        "power" : 8,
+        "xp" : 100
+    }
+}

@@ -2,6 +2,7 @@ import libtcodpy as libtcod
 import components as Components
 import object
 import json
+import glob
 
 class Decoder:
     def __init__(self, path):
@@ -12,25 +13,17 @@ class Decoder:
         decodeString = decodeFile.read()
         return json.loads(decodeString, object_hook=self._decode_dict)
 
-    def decode_monster_from_file(self, file, x, y):
-        monsterDict = self.decode(file)
-
-        fighter_component = Components.Fighter(hp=monsterDict['fighter']['hp'], dexterity=monsterDict['fighter']['dexterity'],
-            accuracy=monsterDict['fighter']['accuracy'], power=monsterDict['fighter']['power'], xp=monsterDict['fighter']['xp'],
-            death_function=Components.monster_death)
-
-        ai_component = Components.WanderingMonster()
-
-        monster = object.Object(x, y, monsterDict['char'], monsterDict['name'], libtcod.Color(monsterDict['r'],monsterDict['g'],monsterDict['b']),
-            blocks=bool(monsterDict['blocks']), fighter=fighter_component, ai=ai_component)
-        return monster
-
     def decode_spawn_chance(self, file):
         monsterDict = self.decode(file)
         return monsterDict['spawn_chance']
 
-    def decode_item_from_file(self, file):
-        return True
+    def decode_all_spawn_chances(self):
+        spawn_chances = {}
+        for file in glob.glob(self.path + '/*.json'):
+            fileName = file.split('/')[-1]
+            enemyName = fileName.split('.')[0]
+            spawn_chances[enemyName] = self.decode_spawn_chance(fileName)
+        return spawn_chances
 
     def _decode_list(self, data):
         rv = []
@@ -57,3 +50,27 @@ class Decoder:
                 value = self._decode_dict(value)
             rv[key] = value
         return rv
+
+class EnemyDecoder(Decoder):
+    def __init__(self, path):
+        Decoder.__init__(self, path)
+
+    def decode_enemy(self, file, x, y):
+        monsterDict = Decoder.decode(self, file + '.json')
+
+        fighter_component = Components.Fighter(hp=monsterDict['fighter']['hp'], dexterity=monsterDict['fighter']['dexterity'],
+            accuracy=monsterDict['fighter']['accuracy'], power=monsterDict['fighter']['power'], xp=monsterDict['fighter']['xp'],
+            death_function=Components.monster_death)
+
+        ai_component = Components.WanderingMonster()
+
+        monster = object.Object(x, y, monsterDict['char'], monsterDict['name'], libtcod.Color(monsterDict['r'],monsterDict['g'],monsterDict['b']),
+            blocks=bool(monsterDict['blocks']), fighter=fighter_component, ai=ai_component)
+        return monster
+
+class ItemDecoder(Decoder):
+    def __init__(self, file):
+        Decoder.__init__(self, file)
+
+    def decode(self, file, x, y):
+        return True
