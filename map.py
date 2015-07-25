@@ -9,11 +9,15 @@ import decoder
 
 enemyDecoder = decoder.EnemyDecoder('enemies/')
 itemDecoder = decoder.ItemDecoder('items/')
+equipmentDecoder = decoder.EquipmentDecoder('equipment/')
 
 class Map:
 
 	MAX_ROOM_MONSTERS = [[2, 1], [3, 4], [5, 6]]
+	# MAX_ROOM_MONSTERS = [[0, 1], [3, 4], [5, 6]]
 	MAX_ROOM_ITEMS = [[1, 1], [2, 4]]
+	MAX_EQUIPMENT = 3
+	EQUIPMENT_CHANCE = 75
 	LIGHTNING_CHANCE = [[25, 4]]
 	FIREBALL_CHANCE = [[25, 6]]
 	CONFUSE_CHANCE = [[10, 2]]
@@ -33,6 +37,7 @@ class Map:
 		self.objects = []
 		self.monster_chances = {}
 		self.item_chances = {}
+		self.equipment_count = 0
 		self.make_map()
 		self.fov_recompute = True
 		self.fov_map = self.make_fov_map()
@@ -51,16 +56,24 @@ class Map:
 
 		rooms = []
 		num_rooms = 0
-		self.item_chances['heal'] = 35
-		self.item_chances['sword'] = 35
-		self.item_chances['shield'] = 35
-		self.item_chances['lightning'] = from_dungeon_level(Map.LIGHTNING_CHANCE)
-		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
-		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
 
 		self.monster_chances = enemyDecoder.decode_all_spawn_chances()
 		for chance in self.monster_chances:
 			self.monster_chances[chance] = from_dungeon_level(self.monster_chances[chance])
+
+		self.item_chances = itemDecoder.decode_all_spawn_chances()
+		for chance in self.item_chances:
+			self.item_chances[chance] = from_dungeon_level(self.item_chances[chance])
+
+		self.equipment_chances = equipmentDecoder.decode_all_spawn_chances()
+		for chance in self.equipment_chances:
+			self.equipment_chances[chance] = from_dungeon_level(self.equipment_chances[chance])
+
+		# self.item_chances['sword'] = 35
+		# self.item_chances['shield'] = 35
+		self.item_chances['lightning'] = from_dungeon_level(Map.LIGHTNING_CHANCE)
+		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
+		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -112,6 +125,9 @@ class Map:
 		num_items = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_ITEMS))
 		self.place_items(room, num_items)
 
+		num_equipment = libtcod.random_get_int(0, 0, 100)
+		self.place_equipment(room, num_equipment)
+
 	def place_items(self, room, num_items):
 		for i in range(num_items):
 			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
@@ -119,9 +135,8 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.item_chances)
-				if choice == 'heal':
-					item_component = Components.Item(use_function=Components.cast_heal)
-					item = Object(x, y, '!', 'healing potion', libtcod.violet, always_visible=True, item=item_component)
+				if choice == 'minor healing potion':
+					item = itemDecoder.decode_item('minor healing potion', x, y)
 				elif choice == 'lightning':
 					item_component = Components.Item(use_function=Components.cast_lightning)
 					item = Object(x, y, '#', 'scroll of lightning', libtcod.dark_amber, always_visible=True, item=item_component)
@@ -132,8 +147,7 @@ class Map:
 					item_component = Components.Item(use_function=Components.cast_fireball)
 					item = Object(x, y, '#', 'scroll of fireball', libtcod.dark_amber, always_visible=True, item=item_component)
 				elif choice == 'sword':
-					equipment_component = equipment.Equipment(slot='right hand', power_bonus=3)
-					item = Object(x, y, '/', 'sword', libtcod.sky, always_visible=True, equipment=equipment_component)
+					item = equipmentDecoder.decode_equipment('sword', x, y)
 				elif choice == 'shield':
 						equipment_component = equipment.Equipment(slot='left hand', dexterity_bonus=3)
 						item = Object(x, y, '[', 'shield', libtcod.darker_orange, always_visible=True, equipment=equipment_component)
@@ -148,6 +162,15 @@ class Map:
 				choice = random_choice(self.monster_chances)
 				monster = enemyDecoder.decode_enemy(choice, x, y)
 				self.add_object(monster)
+
+	def place_equipment(self, room, equipment_chance):
+		if equipment_chance > Map.EQUIPMENT_CHANCE and self.equipment_count < Map.MAX_EQUIPMENT:
+			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
+			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
+
+			choice = random_choice(self.equipment_chances)
+			item = equipmentDecoder.decode_equipment(choice, x, y)
+			self.objects.insert(0, item)
 
 	def create_room(self, room):
 		for x in range(room.x1 + 1, room.x2):

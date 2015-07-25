@@ -1,0 +1,9 @@
+{
+    "name" : "minor healing potion",
+    "char" : "!",
+    "r" : 127,
+    "g" : 0,
+    "b" : 255,
+    "spawn_chance" : [[35, 0]],
+    "use_function" : "cast_heal"
+}
