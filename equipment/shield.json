@@ -1,0 +1,13 @@
+{
+    "name" : "shield",
+    "char" : "[",
+    "r" : 127,
+    "g" : 63,
+    "b" : 0,
+    "spawn_chance" : [[35, 0]],
+    "slot" : "left hand",
+    "power_bonus" : 0,
+    "dexterity_bonus" : 3,
+    "max_hp_bonus" : 0,
+    "accuracy_bonus" : 0
+}

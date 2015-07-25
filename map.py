@@ -18,9 +18,6 @@ class Map:
 	MAX_ROOM_ITEMS = [[1, 1], [2, 4]]
 	MAX_EQUIPMENT = 3
 	EQUIPMENT_CHANCE = 75
-	LIGHTNING_CHANCE = [[25, 4]]
-	FIREBALL_CHANCE = [[25, 6]]
-	CONFUSE_CHANCE = [[10, 2]]
 	ROOM_MIN_SIZE = 6
 	ROOM_MAX_SIZE = 10
 	MAX_ROOMS = 30
@@ -69,11 +66,9 @@ class Map:
 		for chance in self.equipment_chances:
 			self.equipment_chances[chance] = from_dungeon_level(self.equipment_chances[chance])
 
-		# self.item_chances['sword'] = 35
-		# self.item_chances['shield'] = 35
-		self.item_chances['lightning'] = from_dungeon_level(Map.LIGHTNING_CHANCE)
-		self.item_chances['fireball'] = from_dungeon_level(Map.FIREBALL_CHANCE)
-		self.item_chances['confuse'] = from_dungeon_level(Map.CONFUSE_CHANCE)
+		# print self.monster_chances
+		# print self.item_chances
+		# print self.equipment_chances
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -135,22 +130,8 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.item_chances)
-				if choice == 'minor healing potion':
-					item = itemDecoder.decode_item('minor healing potion', x, y)
-				elif choice == 'lightning':
-					item_component = Components.Item(use_function=Components.cast_lightning)
-					item = Object(x, y, '#', 'scroll of lightning', libtcod.dark_amber, always_visible=True, item=item_component)
-				elif choice == 'fireball':
-					item_component = Components.Item(use_function=Components.cast_confuse)
-					item = Object(x, y, '#', 'scroll of confusion', libtcod.dark_amber, always_visible=True, item=item_component)
-				elif choice == 'confuse':
-					item_component = Components.Item(use_function=Components.cast_fireball)
-					item = Object(x, y, '#', 'scroll of fireball', libtcod.dark_amber, always_visible=True, item=item_component)
-				elif choice == 'sword':
-					item = equipmentDecoder.decode_equipment('sword', x, y)
-				elif choice == 'shield':
-						equipment_component = equipment.Equipment(slot='left hand', dexterity_bonus=3)
-						item = Object(x, y, '[', 'shield', libtcod.darker_orange, always_visible=True, equipment=equipment_component)
+				item = itemDecoder.decode_item(choice, x, y)
+
 				self.objects.insert(0, item)
 
 	def place_monsters(self, room, num_monsters):

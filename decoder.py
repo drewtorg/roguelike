@@ -83,7 +83,10 @@ class ItemDecoder(Decoder):
         return item
 
 item_functions = {
-    "cast_heal" : Components.cast_heal
+    "cast_heal" : Components.cast_heal,
+    "cast_lightning" : Components.cast_lightning,
+    "cast_fireball" : Components.cast_fireball,
+    "cast_confuse" : Components.cast_confuse
 }
 
 class EquipmentDecoder(Decoder):

@@ -1,0 +1,9 @@
+{
+    "name" : "scroll of confusion",
+    "char" : "#",
+    "r" : 191,
+    "g" : 143,
+    "b" : 0,
+    "spawn_chance" : [[10, 2]],
+    "use_function" : "cast_confuse"
+}
