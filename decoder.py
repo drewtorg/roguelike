@@ -97,7 +97,6 @@ class EquipmentDecoder(Decoder):
         color = vars(libtcod)[item_dict['color']]
         item = object.Object(x, y, item_dict['char'], item_dict['name'],
             color=color, always_visible=True, equipment=equipment_component)
-
         return item
 
 class MapDecoder(Decoder):

@@ -14,6 +14,7 @@ map_decoder = decoder.MapDecoder('maps/')
 
 class Map:
 
+	# map_dict = map_decoder.decode_map('large_rooms')
 	map_dict = map_decoder.decode_map('standard')
 
 	MAX_ROOM_MONSTERS =			 map_dict['MAX_ROOM_MONSTERS']
@@ -68,9 +69,9 @@ class Map:
 		for chance in self.equipment_chances:
 			self.equipment_chances[chance] = from_dungeon_level(self.equipment_chances[chance])
 
-		print self.monster_chances
-		print self.item_chances
-		print self.equipment_chances
+		# print self.monster_chances
+		# print self.item_chances
+		# print self.equipment_chances
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -152,8 +153,9 @@ class Map:
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			choice = random_choice(self.equipment_chances)
-			item = equipment_decoder.decode_equipment(choice, x, y)
-			self.objects.insert(0, item)
+			if choice is not None:
+				item = equipment_decoder.decode_equipment(choice, x, y)
+				self.objects.insert(0, item)
 
 	def create_room(self, room):
 		for x in range(room.x1 + 1, room.x2):
@@ -241,9 +243,12 @@ def random_choice_index(chances):
 		choice += 1
 
 def random_choice(chances_dict):
+
 	chances = chances_dict.values()
 	strings = chances_dict.keys()
 
+	if sum(chances) == 0:
+		return None
 	return strings[random_choice_index(chances)]
 
 def from_dungeon_level(table):

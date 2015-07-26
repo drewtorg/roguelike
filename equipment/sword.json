@@ -2,7 +2,7 @@
     "name" : "sword",
     "char" : "/",
     "color" : "sky",
-    "spawn_chance" : [[35, 0]],
+    "spawn_chance" : [[35, 4]],
     "slot" : "right hand",
     "power_bonus" : 3,
     "dexterity_bonus" : 0,
