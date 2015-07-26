@@ -7,25 +7,27 @@ import game
 import equipment
 import decoder
 
-enemyDecoder = decoder.EnemyDecoder('enemies/')
-itemDecoder = decoder.ItemDecoder('items/')
-equipmentDecoder = decoder.EquipmentDecoder('equipment/')
+enemy_decoder = decoder.EnemyDecoder('enemies/')
+item_decoder = decoder.ItemDecoder('items/')
+equipment_decoder = decoder.EquipmentDecoder('equipment/')
+map_decoder = decoder.MapDecoder('maps/')
 
 class Map:
 
-	MAX_ROOM_MONSTERS = [[2, 1], [3, 4], [5, 6]]
-	# MAX_ROOM_MONSTERS = [[0, 1], [3, 4], [5, 6]]
-	MAX_ROOM_ITEMS = [[1, 1], [2, 4]]
-	MAX_EQUIPMENT = 3
-	EQUIPMENT_CHANCE = 75
-	ROOM_MIN_SIZE = 6
-	ROOM_MAX_SIZE = 10
-	MAX_ROOMS = 30
-	FOV_ALGO = 0
-	FOV_LIGHT_WALLS = True
-	TORCH_RADIUS = 5
-	COLOR_LIT = libtcod.lighter_grey
-	COLOR_UNLIT = libtcod.dark_grey
+	map_dict = map_decoder.decode_map('standard')
+
+	MAX_ROOM_MONSTERS =			 map_dict['MAX_ROOM_MONSTERS']
+	MAX_ROOM_ITEMS =			 map_dict['MAX_ROOM_ITEMS']
+	EQUIPMENT_DROP_CHANCE =		 map_dict['EQUIPMENT_DROP_CHANCE']
+	ROOM_MIN_SIZE =				 map_dict['ROOM_MIN_SIZE']
+	ROOM_MAX_SIZE =				 map_dict['ROOM_MAX_SIZE']
+	MAX_EQUIPMENT =				 map_dict['MAX_EQUIPMENT']
+	MAX_ROOMS =					 map_dict['MAX_ROOMS']
+	FOV_ALGO =				 	 map_dict['FOV_ALGO']
+	FOV_LIGHT_WALLS =			 map_dict['FOV_LIGHT_WALLS']
+	TORCH_RADIUS =				 map_dict['TORCH_RADIUS']
+	COLOR_LIT =				 	 vars(libtcod)[map_dict['COLOR_LIT']]
+	COLOR_UNLIT =				 vars(libtcod)[map_dict['COLOR_UNLIT']]
 
 
 	def __init__(self, width, height):
@@ -54,21 +56,21 @@ class Map:
 		rooms = []
 		num_rooms = 0
 
-		self.monster_chances = enemyDecoder.decode_all_spawn_chances()
+		self.monster_chances = enemy_decoder.decode_all_spawn_chances()
 		for chance in self.monster_chances:
 			self.monster_chances[chance] = from_dungeon_level(self.monster_chances[chance])
 
-		self.item_chances = itemDecoder.decode_all_spawn_chances()
+		self.item_chances = item_decoder.decode_all_spawn_chances()
 		for chance in self.item_chances:
 			self.item_chances[chance] = from_dungeon_level(self.item_chances[chance])
 
-		self.equipment_chances = equipmentDecoder.decode_all_spawn_chances()
+		self.equipment_chances = equipment_decoder.decode_all_spawn_chances()
 		for chance in self.equipment_chances:
 			self.equipment_chances[chance] = from_dungeon_level(self.equipment_chances[chance])
 
-		# print self.monster_chances
-		# print self.item_chances
-		# print self.equipment_chances
+		print self.monster_chances
+		print self.item_chances
+		print self.equipment_chances
 
 		for r in range(Map.MAX_ROOMS):
 			#make a random room
@@ -120,8 +122,8 @@ class Map:
 		num_items = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_ITEMS))
 		self.place_items(room, num_items)
 
-		num_equipment = libtcod.random_get_int(0, 0, 100)
-		self.place_equipment(room, num_equipment)
+		equipment_chance = libtcod.random_get_int(0, 0, 100)
+		self.place_equipment(room, equipment_chance)
 
 	def place_items(self, room, num_items):
 		for i in range(num_items):
@@ -130,7 +132,7 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.item_chances)
-				item = itemDecoder.decode_item(choice, x, y)
+				item = item_decoder.decode_item(choice, x, y)
 
 				self.objects.insert(0, item)
 
@@ -141,16 +143,16 @@ class Map:
 
 			if not self.is_blocked(x, y):
 				choice = random_choice(self.monster_chances)
-				monster = enemyDecoder.decode_enemy(choice, x, y)
+				monster = enemy_decoder.decode_enemy(choice, x, y)
 				self.add_object(monster)
 
 	def place_equipment(self, room, equipment_chance):
-		if equipment_chance > Map.EQUIPMENT_CHANCE and self.equipment_count < Map.MAX_EQUIPMENT:
+		if equipment_chance > Map.EQUIPMENT_DROP_CHANCE and self.equipment_count < Map.MAX_EQUIPMENT:
 			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 
 			choice = random_choice(self.equipment_chances)
-			item = equipmentDecoder.decode_equipment(choice, x, y)
+			item = equipment_decoder.decode_equipment(choice, x, y)
 			self.objects.insert(0, item)
 
 	def create_room(self, room):

@@ -1,9 +1,7 @@
 {
     "name" : "scroll of fireball",
     "char" : "#",
-    "r" : 191,
-    "g" : 143,
-    "b" : 0,
+    "color" : "amber",
     "spawn_chance" : [[25, 6]],
     "use_function" : "cast_fireball"
 }

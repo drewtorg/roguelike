@@ -2,10 +2,10 @@
     "name" : "Troll",
     "char" : "T",
     "blocks" : "True",
-    "r" : 0,
-    "g" : 127,
-    "b" : 0,
+    "color" : "darker_green",
+    "death_function" : "monster_death",
     "spawn_chance" : [[15, 3], [30, 5], [60, 7]],
+    "ai" : "WanderingMonster",
     "fighter" : {
         "hp" : 30,
         "dexterity" : 4,

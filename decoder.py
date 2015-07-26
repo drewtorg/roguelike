@@ -57,51 +57,54 @@ class EnemyDecoder(Decoder):
         Decoder.__init__(self, path)
 
     def decode_enemy(self, file, x, y):
-        monsterDict = Decoder.decode(self, file)
+        enemy_dict = Decoder.decode(self, file)
 
-        fighter_component = Components.Fighter(hp=monsterDict['fighter']['hp'], dexterity=monsterDict['fighter']['dexterity'],
-            accuracy=monsterDict['fighter']['accuracy'], power=monsterDict['fighter']['power'], xp=monsterDict['fighter']['xp'],
-            death_function=Components.monster_death)
+        fighter_component = Components.Fighter(hp=enemy_dict['fighter']['hp'], dexterity=enemy_dict['fighter']['dexterity'],
+            accuracy=enemy_dict['fighter']['accuracy'], power=enemy_dict['fighter']['power'], xp=enemy_dict['fighter']['xp'],
+            death_function=vars(Components)[enemy_dict['death_function']])
 
-        ai_component = Components.WanderingMonster()
+        ai_component = vars(Components)[enemy_dict['ai']]()
 
-        monster = object.Object(x, y, monsterDict['char'], monsterDict['name'], libtcod.Color(monsterDict['r'],monsterDict['g'],monsterDict['b']),
-            blocks=bool(monsterDict['blocks']), fighter=fighter_component, ai=ai_component)
+        color = vars(libtcod)[enemy_dict['color']]
+        monster = object.Object(x, y, enemy_dict['char'], enemy_dict['name'], color=color,
+            blocks=bool(enemy_dict['blocks']), fighter=fighter_component, ai=ai_component)
         return monster
 
 class ItemDecoder(Decoder):
-    def __init__(self, file):
-        Decoder.__init__(self, file)
+    def __init__(self, path):
+        Decoder.__init__(self, path)
 
     def decode_item(self, file, x, y):
-        itemDict = Decoder.decode(self, file)
+        item_dict = Decoder.decode(self, file)
 
-        item_component = Components.Item(use_function=item_functions[itemDict['use_function']])
-        item = object.Object(x, y, itemDict['char'], itemDict['name'],
-            libtcod.Color(itemDict['r'], itemDict['g'], itemDict['b']),
-            always_visible=True, item=item_component)
+        color = vars(libtcod)[item_dict['color']]
+        item_component = Components.Item(use_function=vars(Components)[item_dict['use_function']])
+        item = object.Object(x, y, item_dict['char'], item_dict['name'],
+            color=color, always_visible=True, item=item_component)
         return item
-
-item_functions = {
-    "cast_heal" : Components.cast_heal,
-    "cast_lightning" : Components.cast_lightning,
-    "cast_fireball" : Components.cast_fireball,
-    "cast_confuse" : Components.cast_confuse
-}
 
 class EquipmentDecoder(Decoder):
-    def __init__(self, file):
-        Decoder.__init__(self, file)
+    def __init__(self, path):
+        Decoder.__init__(self, path)
 
     def decode_equipment(self, file, x, y):
-        itemDict = Decoder.decode(self, file)
+        item_dict = Decoder.decode(self, file)
 
-        equipment_component = equipment.Equipment(slot=itemDict['slot'],
-            power_bonus=itemDict['power_bonus'], dexterity_bonus=itemDict['dexterity_bonus'],
-            max_hp_bonus=itemDict['max_hp_bonus'], accuracy_bonus=itemDict['accuracy_bonus'])
+        equipment_component = equipment.Equipment(slot=item_dict['slot'],
+            power_bonus=item_dict['power_bonus'], dexterity_bonus=item_dict['dexterity_bonus'],
+            max_hp_bonus=item_dict['max_hp_bonus'], accuracy_bonus=item_dict['accuracy_bonus'])
 
-        item = object.Object(x, y, itemDict['char'], itemDict['name'],
-            libtcod.Color(itemDict['r'], itemDict['g'], itemDict['b']),
-            always_visible=True, equipment=equipment_component)
+        color = vars(libtcod)[item_dict['color']]
+        item = object.Object(x, y, item_dict['char'], item_dict['name'],
+            color=color, always_visible=True, equipment=equipment_component)
 
         return item
+
+class MapDecoder(Decoder):
+    def __init__(self, path):
+        Decoder.__init__(self, path)
+
+    def decode_map(self, file):
+        map_dict = Decoder.decode(self, file)
+        map_dict['FOV_LIGHT_WALLS'] = bool(map_dict['FOV_LIGHT_WALLS'])
+        return map_dict

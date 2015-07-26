@@ -2,10 +2,10 @@
     "name" : "Orc",
     "char" : "o",
     "blocks" : "True",
-    "r" : 63,
-    "g" : 127,
-    "b" : 63,
+    "color" : "desaturated_green",
+    "death_function" : "monster_death",
     "spawn_chance" : [[80, 0]],
+    "ai" : "WanderingMonster",
     "fighter" : {
         "hp" : 14,
         "dexterity" : 2,

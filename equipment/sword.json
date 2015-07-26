@@ -1,9 +1,7 @@
 {
     "name" : "sword",
     "char" : "/",
-    "r" : 0,
-    "g" : 191,
-    "b" : 255,
+    "color" : "sky",
     "spawn_chance" : [[35, 0]],
     "slot" : "right hand",
     "power_bonus" : 3,

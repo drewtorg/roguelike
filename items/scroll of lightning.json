@@ -1,9 +1,7 @@
 {
     "name" : "scroll of lightning",
     "char" : "#",
-    "r" : 191,
-    "g" : 143,
-    "b" : 0,
+    "color" : "amber",
     "spawn_chance" : [[25, 4]],
     "use_function" : "cast_lightning"
 }

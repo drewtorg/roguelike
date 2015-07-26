@@ -143,6 +143,7 @@ class Game:
 	def render_walls_and_floor():
 		for y in range(Game.MAP_HEIGHT):
 			for x in range(Game.MAP_WIDTH):
+				# visible = True
 				visible = libtcod.map_is_in_fov(Game.map.fov_map, x, y)
 				wall = Game.map[x][y].block_sight
 				if not visible:
@@ -308,11 +309,11 @@ class Game:
 
 		Game.message('You descend deeper into the heart of the dungeon...', libtcod.red)
 		libtcod.console_clear(Game.main_console)
+		Game.dungeon_level += 1
 		Game.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
 		Game.player.x = Game.map.origin[0]
 		Game.player.y = Game.map.origin[1]
 		Game.map.add_object(Game.player)
-		Game.dungeon_level += 1
 
 	@staticmethod
 	def check_level_up():

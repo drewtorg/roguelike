@@ -1,9 +1,7 @@
 {
     "name" : "shield",
     "char" : "[",
-    "r" : 127,
-    "g" : 63,
-    "b" : 0,
+    "color" : "dark_orange",
     "spawn_chance" : [[35, 0]],
     "slot" : "left hand",
     "power_bonus" : 0,
