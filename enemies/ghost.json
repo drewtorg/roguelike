@@ -1,0 +1,16 @@
+{
+    "name" : "Ghost",
+    "char" : "g",
+    "blocks" : "False",
+    "color" : "lightest_grey",
+    "death_function" : "monster_death",
+    "spawn_chance" : [[20, 3]],
+    "ai" : "WanderingMonster",
+    "fighter" : {
+        "hp" : 1,
+        "dexterity" : 19,
+        "accuracy" : 100,
+        "power" : 1,
+        "xp" : 80
+    }
+}

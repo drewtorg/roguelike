@@ -1,0 +1,16 @@
+{
+    "name" : "Salamander",
+    "char" : "S",
+    "blocks" : "True",
+    "color" : "flame",
+    "death_function" : "monster_death",
+    "spawn_chance" : [[40, 3], [70, 5]],
+    "ai" : "WanderingMonster",
+    "fighter" : {
+        "hp" : 30,
+        "dexterity" : 14,
+        "accuracy" : 20,
+        "power" : 5,
+        "xp" : 60
+    }
+}

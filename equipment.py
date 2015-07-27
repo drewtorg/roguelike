@@ -31,7 +31,7 @@ class Equipment:
         game.Game.message('Dequipped ' + self.owner.name + ' on ' + self.slot + '.', libtcod.light_yellow)
 
     def get_equipped_in_slot(self, slot):
-		for obj in game.Game.inventory:
-			if obj.equipment and obj.equipment.slot == slot and obj.equipment.is_equipped:
-				return obj.equipment
-		return None
+        for obj in game.Game.inventory:
+            if obj.equipment and obj.equipment.slot == slot and obj.equipment.is_equipped:
+                return obj.equipment
+        return None

@@ -105,7 +105,7 @@ class WanderingMonster:
 		elif game.Game.player.fighter.hp > 0:
 			monster.fighter.attack(game.Game.player)
 
-		if self.current_path == []:
+		elif self.current_path == []:
 			monster.wander()
 
 
