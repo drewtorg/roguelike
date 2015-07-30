@@ -4,6 +4,7 @@ import equipment
 import object
 import json
 import glob
+from sys import platform as _platform
 
 class Decoder:
     def __init__(self, path):
@@ -21,7 +22,10 @@ class Decoder:
     def decode_all_spawn_chances(self):
         spawn_chances = {}
         for file in glob.glob(self.path + '/*.json'):
-            fileName = file.split('/')[-1]
+            if _platform == 'win32':
+                fileName = file.split('\\')[-1]
+            else:
+                fileName = file.split('/')[-1]
             enemyName = fileName.split('.')[0]
             spawn_chances[enemyName] = self.decode_spawn_chance(enemyName)
         return spawn_chances
