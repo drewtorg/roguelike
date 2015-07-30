@@ -71,7 +71,7 @@ class Fighter:
 	def get_all_equipped(self):
 		if self.owner == game.Game.player:
 			equipped_list = []
-			for item in game.Game.inventory:
+			for item in game.Game.player.inventory:
 				if item.equipment and item.equipment.is_equipped:
 					equipped_list.append(item.equipment)
 			return equipped_list
@@ -131,10 +131,10 @@ class Item:
 		self.use_function = use_function
 
 	def pick_up(self):
-		if len(game.Game.inventory) >= 26:
+		if len(game.Game.player.inventory) >= 26:
 			game.Game.message('Your inventory is full, cannot pick up ' + 'self.owner.name' + '.', libtcod.red)
 		else:
-			game.Game.inventory.append(self.owner)
+			game.Game.player.inventory.append(self.owner)
 			game.Game.map.remove_object(self.owner)
 			game.Game.message('You picked up a ' + self.owner.name + '!', libtcod.green)
 
@@ -146,7 +146,7 @@ class Item:
 		if self.owner.equipment:
 			self.owner.equipment.dequip()
 
-		game.Game.inventory.remove(self.owner)
+		game.Game.player.inventory.remove(self.owner)
 		self.owner.x = game.Game.player.x
 		self.owner.y = game.Game.player.y
 		game.Game.map.add_object(self.owner)
@@ -161,7 +161,7 @@ class Item:
 			game.Game.message('The ' + self.owner.name + ' cannot be used.')
 		else:
 			if self.use_function() != 'cancelled':
-				game.Game.inventory.remove(self.owner)
+				game.Game.player.inventory.remove(self.owner)
 
 ################################# ITEM FUNCTIONS ###############################
 HEAL_AMOUNT = 40

@@ -5,7 +5,11 @@ from rect import Rect
 from map import Map
 from equipment import Equipment
 import components as Components
+import decoder
+from player import Player
 import textwrap
+
+race_decoder = decoder.RaceDecoder('races/')
 
 class Game:
 	SCREEN_WIDTH = 80
@@ -42,20 +46,18 @@ class Game:
 		Game.game_msgs = []
 		Game.mouse = libtcod.Mouse()
 		Game.key = libtcod.Key()
-		Game.inventory = []
 		Game.panel = libtcod.console_new(Game.SCREEN_WIDTH, Game.PANEL_HEIGHT)
 		Game.map = Map(Game.MAP_WIDTH, Game.MAP_HEIGHT)
 
 		libtcod.console_clear(Game.main_console)
 
-		_fighter_component = Components.Fighter(hp=100, dexterity=4, accuracy=20, power=4, xp=0, death_function=Components.player_death)
-		Game.player = Object(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, blocks=True, fighter=_fighter_component)
-		Game.player.level = 1
+		_fighter_component = race_decoder.decode_race_fighter('human')
+		Game.player = Player(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, fighter_component=_fighter_component)
 		Game.map.add_object(Game.player)
 
 		_equipment_component = Equipment(slot='right hand', power_bonus=2)
 		_obj = Object(0, 0, '-', 'dagger', libtcod.sky, equipment=_equipment_component)
-		Game.inventory.append(_obj)
+		Game.player.inventory.append(_obj)
 		_equipment_component.equip()
 
 		Game.message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', libtcod.light_green)
@@ -210,20 +212,20 @@ class Game:
 
 	@staticmethod
 	def inventory_menu(header):
-		if len(Game.inventory) == 0:
+		if len(Game.player.inventory) == 0:
 			options = ['Inventory is empty.']
 		else:
 			options = []
-			for item in Game.inventory:
+			for item in Game.player.inventory:
 				text = item.name
 				if item.equipment and item.equipment.is_equipped:
 					text = text + ' (on ' + item.equipment.slot + ')'
 				options.append(text)
 
 		index = Game.menu(header, options, Game.INVENTORY_WIDTH)
-		if index is None or len(Game.inventory) == 0:
+		if index is None or len(Game.player.inventory) == 0:
 			return None
-		return Game.inventory[index].item
+		return Game.player.inventory[index].item
 
 	@staticmethod
 	def main_menu():

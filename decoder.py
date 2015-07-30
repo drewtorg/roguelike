@@ -111,3 +111,14 @@ class MapDecoder(Decoder):
         map_dict = Decoder.decode(self, file)
         map_dict['FOV_LIGHT_WALLS'] = bool(map_dict['FOV_LIGHT_WALLS'])
         return map_dict
+
+class RaceDecoder(Decoder):
+    def __init__(self, path):
+        Decoder.__init__(self, path)
+
+    def decode_race_fighter(self, file):
+        race_dict = Decoder.decode(self, file)
+        fighter_dict = race_dict['fighter']
+        fighter = Components.Fighter(fighter_dict['hp'], fighter_dict['dexterity'],
+            fighter_dict['accuracy'], fighter_dict['power'], fighter_dict['xp'], Components.player_death)
+        return fighter
