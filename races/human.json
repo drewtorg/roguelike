@@ -1,4 +1,5 @@
 {
+    "color": "pink",
     "fighter": {
         "hp" : 100,
         "dexterity" : 4,

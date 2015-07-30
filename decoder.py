@@ -133,3 +133,7 @@ class RaceDecoder(Decoder):
         fighter = Components.Fighter(fighter_dict['hp'], fighter_dict['dexterity'],
             fighter_dict['accuracy'], fighter_dict['power'], fighter_dict['xp'], Components.player_death)
         return fighter
+
+    def decode_race_color(self, file):
+        race_dict = Decoder.decode(self, file)
+        return vars(libtcod)[race_dict['color']]

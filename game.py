@@ -52,7 +52,8 @@ class Game:
 		libtcod.console_clear(Game.main_console)
 
 		_fighter_component = race_decoder.decode_race_fighter(race)
-		Game.player = Player(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, fighter_component=_fighter_component)
+		_color = race_decoder.decode_race_color(race)
+		Game.player = Player(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', _color, fighter_component=_fighter_component, race=race)
 		Game.map.add_object(Game.player)
 
 		_equipment_component = Equipment(slot='right hand', power_bonus=2)

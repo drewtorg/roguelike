@@ -5,7 +5,7 @@ import components as Components
 from heapq import *
 
 class Object:
-	def __init__(self, x, y, char, name, color, blocks=False, always_visible=False, fighter=None, ai=None, item=None, equipment=None):
+	def __init__(self, x, y, char, name, color, blocks=False, always_visible=False, fighter=None, ai=None, item=None, equipment=None, race=None):
 		self.x = x
 		self.y = y
 		self.char = char
@@ -13,6 +13,7 @@ class Object:
 		self.color = color
 		self.blocks = blocks
 		self.always_visible = always_visible
+		self.race = race
 
 		self.fighter = fighter
 		if self.fighter:
