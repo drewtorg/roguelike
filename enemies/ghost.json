@@ -10,7 +10,7 @@
         "hp" : 1,
         "dexterity" : 19,
         "accuracy" : 100,
-        "power" : 1,
+        "power" : 2,
         "xp" : 80
     }
 }

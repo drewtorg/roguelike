@@ -1,0 +1,9 @@
+{
+    "fighter": {
+        "hp" : 70,
+        "dexterity" : 8,
+        "accuracy" : 20,
+        "power" : 3,
+        "xp" : 0
+    }
+}

@@ -40,7 +40,7 @@ class Game:
 	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 	@staticmethod
-	def new_game():
+	def new_game(race):
 		Game.state = 'playing'
 		Game.dungeon_level = 1
 		Game.game_msgs = []
@@ -51,7 +51,7 @@ class Game:
 
 		libtcod.console_clear(Game.main_console)
 
-		_fighter_component = race_decoder.decode_race_fighter('human')
+		_fighter_component = race_decoder.decode_race_fighter(race)
 		Game.player = Player(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', libtcod.pink, fighter_component=_fighter_component)
 		Game.map.add_object(Game.player)
 
@@ -173,7 +173,15 @@ class Game:
 			libtcod.console_put_char(Game.main_console, object.x, object.y, object.char, libtcod.BKGND_NONE)
 
 	@staticmethod
-	def menu(header, options, width):
+	def render_main_screen(img):
+		libtcod.image_blit_2x(img, 0, 0, 0)
+
+		libtcod.console_set_default_foreground(0, libtcod.light_yellow)
+		libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT/2 - 4, libtcod.BKGND_NONE, libtcod.CENTER, 'Salty Territory')
+		libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT - 2, libtcod.BKGND_NONE, libtcod.CENTER, 'By Drew')
+
+	@staticmethod
+	def menu(header, options, width, transparency=.07):
 		if header == '':
 			header_height = 0
 
@@ -199,7 +207,7 @@ class Game:
 		x = Game.SCREEN_WIDTH/2 - width/2
 		y = Game.SCREEN_HEIGHT/2 - height/2
 
-		libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7) #0.7 is the transparency
+		libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, transparency)
 		libtcod.console_flush()
 
 		key = libtcod.console_wait_for_keypress(True)
@@ -232,16 +240,23 @@ class Game:
 		img = libtcod.image_load('img/menu_background1.png')
 
 		while not libtcod.console_is_window_closed():
-			libtcod.image_blit_2x(img, 0, 0, 0)
-
-			libtcod.console_set_default_foreground(0, libtcod.light_yellow)
-			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT/2 - 4, libtcod.BKGND_NONE, libtcod.CENTER, 'TITLE HERE')
-			libtcod.console_print_ex(0, Game.SCREEN_WIDTH/2, Game.SCREEN_HEIGHT - 2, libtcod.BKGND_NONE, libtcod.CENTER, 'By Drew')
+			Game.render_main_screen(img)
 
 			choice = Game.menu('', ['Play a new game', 'Continue current game', 'Quit'], 24)
 
 			if choice == 0:
-				Game.new_game()
+				Game.render_main_screen(img)
+
+				races = race_decoder.decode_all_races()
+				race = Game.menu('Pick a race', races, 15)
+				if race is None:
+					continue
+
+				# Game.render_main_screen(img)
+				#
+				# classes = class_decoder.decode_all_classes()
+				# class = Game.menu('Pick a class', classes, 15)
+				Game.new_game(races[race].lower())
 				Game.run()
 			elif choice == 1:
 				try:

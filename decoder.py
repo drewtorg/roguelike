@@ -116,6 +116,17 @@ class RaceDecoder(Decoder):
     def __init__(self, path):
         Decoder.__init__(self, path)
 
+    def decode_all_races(self):
+        races = []
+        for file in glob.glob(self.path + '/*.json'):
+            if _platform == 'win32':
+                fileName = file.split('\\')[-1]
+            else:
+                fileName = file.split('/')[-1]
+            race = fileName.split('.')[0]
+            races.append(race.title())
+        return races
+
     def decode_race_fighter(self, file):
         race_dict = Decoder.decode(self, file)
         fighter_dict = race_dict['fighter']

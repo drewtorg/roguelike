@@ -4,7 +4,7 @@
     "blocks" : "True",
     "color" : "darker_green",
     "death_function" : "monster_death",
-    "spawn_chance" : [[15, 3], [30, 5], [60, 7]],
+    "spawn_chance" : [[15, 3], [30, 5], [60, 8]],
     "ai" : "WanderingMonster",
     "fighter" : {
         "hp" : 30,
