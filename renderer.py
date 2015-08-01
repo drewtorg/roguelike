@@ -160,13 +160,13 @@ class Renderer:
 				if not visible:
 					if self.map[x][y].explored:
 						if wall:
-							libtcod.console_put_char_ex(Renderer.main_console, x, y, '#', Map.COLOR_UNLIT, libtcod.black)
+							libtcod.console_put_char_ex(Renderer.main_console, x, y, libtcod.CHAR_BLOCK2, Map.COLOR_UNLIT, libtcod.black)
 						else:
 							libtcod.console_put_char_ex(Renderer.main_console, x, y, '.', Map.COLOR_UNLIT, libtcod.black)
 				else:
 					self.map[x][y].explored = True
 					if wall:
-						libtcod.console_put_char_ex(Renderer.main_console, x, y, '#', Map.COLOR_LIT, libtcod.black)
+						libtcod.console_put_char_ex(Renderer.main_console, x, y, libtcod.CHAR_BLOCK2, Map.COLOR_LIT, libtcod.black)
 					else:
 						libtcod.console_put_char_ex(Renderer.main_console, x, y, '.', Map.COLOR_LIT, libtcod.black)
 
