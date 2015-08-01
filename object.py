@@ -121,8 +121,8 @@ def astar(start, goal):
 		for i, j in neighbors:
 			neighbor = current[0] + i, current[1] + j
 			tentative_g_score = gscore[current] + heuristic(current, neighbor)
-			if 0 <= neighbor[0] < game.Game.SCREEN_WIDTH:
-				if 0 <= neighbor[1] < game.Game.SCREEN_HEIGHT:
+			if 0 <= neighbor[0] < game.Game.map.width:
+				if 0 <= neighbor[1] < game.Game.map.height:
 					if game.Game.map.is_blocked(neighbor[0], neighbor[1]) and not neighbor == goal: #neighbor will block if neighbor is the goal
 						continue
 				else:
