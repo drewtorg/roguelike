@@ -172,7 +172,7 @@ class Game:
                 Game.player.fighter.base_power += 1
             elif choice == 2:
                 Game.player.fighter.base_dexterity += 1
-            Game.render_all()
+            renderer.render_all()
 
     @staticmethod
     def get_exp_to_level():
