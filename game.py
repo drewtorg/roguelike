@@ -81,19 +81,15 @@ class Game:
 			y += 1
 
 	@staticmethod
-	def get_names_under_mouse():
-		(x, y) = (Game.mouse.cx, Game.mouse.cy)
-
+	def render_names_under_target(x, y):
 		names = [obj.name.capitalize() for obj in Game.map.objects
 			if obj.x == x and obj.y == y and Game.map.is_in_fov(obj)]
 
 		names = ', '.join(names)
-		return names
 
-	@staticmethod
-	def render_look():
 		libtcod.console_set_default_foreground(Game.panel, libtcod.light_grey)
-		libtcod.console_print_ex(Game.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, Game.get_names_under_mouse())
+		libtcod.console_print_ex(Game.panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, names)
+		libtcod.console_blit(Game.panel, 0, 0, Game.SCREEN_WIDTH, Game.PANEL_HEIGHT, 0, 0, Game.PANEL_Y)
 
 	@staticmethod
 	def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
@@ -132,7 +128,6 @@ class Game:
 
 		Game.render_messages()
 		Game.render_bar(1, 1, Game.BAR_WIDTH, 'HP', Game.player.fighter.hp, Game.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
-		Game.render_look()
 		libtcod.console_print_ex(Game.panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level ' + str(Game.dungeon_level))
 
 	@staticmethod
@@ -283,6 +278,7 @@ class Game:
 
 		while (x, y) != (0, 0):
 			Game.render_all()
+			Game.render_names_under_target(x, y)
 
 			libtcod.console_blit(box, 0, 0, 1, 1, 0, x, y, 1.0, 0.5) #0.7 is the transparency
 			libtcod.console_flush()
@@ -293,7 +289,7 @@ class Game:
 			if key.vk == libtcod.KEY_ESCAPE:
 				return (None, None)
 
-			direction = Game.getDirection(key)
+			direction = Game.get_direction(key)
 			if direction is not None:
 				x += direction[0]
 				y += direction[1]
@@ -371,7 +367,7 @@ class Game:
 		Game.message('You wait.', libtcod.green)
 
 	@staticmethod
-	def getDirection(key):
+	def get_direction(key):
 		if key.vk == libtcod.KEY_UP or key.vk == libtcod.KEY_KP8:
 			return (0, -1)
 		elif key.vk == libtcod.KEY_DOWN or key.vk == libtcod.KEY_KP2:
@@ -403,34 +399,37 @@ class Game:
 		if Game.state == 'playing':
 			#movement keys
 			Game.map.fov_recompute = True
-			direction = Game.getDirection(Game.key)
+			direction = Game.get_direction(Game.key)
 
 			if direction is None:
 				Game.map.fov_recompute = False
 				key_char = chr(Game.key.c)
-
-				if key_char == 'g':
-					Game.try_pick_up()
-
-				if key_char == 'i':
-					chosen_item = Game.inventory_menu('Press the key next to an item to use it.\n')
-					if chosen_item is not None:
-						chosen_item.use()
-
-				if key_char == 'd':
-					chosen_item = Game.inventory_menu('Press the key next to an item to drop it.\n')
-					if chosen_item is not None:
-						chosen_item.drop()
-
-				if key_char == '<':
-					if Game.map.stairs.x == Game.player.x and Game.map.stairs.y == Game.player.y:
-						Game.next_level()
 
 				if key_char == 'c':
 					level_up_exp = Game.get_exp_to_level()
 					Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
 						'\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +
 						'\nAttack: ' + str(Game.player.fighter.power) + '\nDexterity: ' + str(Game.player.fighter.dexterity), Game.CHARACTER_SCREEN_WIDTH)
+
+				elif key_char == 'd':
+					chosen_item = Game.inventory_menu('Press the key next to an item to drop it.\n')
+					if chosen_item is not None:
+						chosen_item.drop()
+
+				elif key_char == 'g':
+					Game.try_pick_up()
+
+				elif key_char == 'i':
+					chosen_item = Game.inventory_menu('Press the key next to an item to use it.\n')
+					if chosen_item is not None:
+						chosen_item.use()
+
+				elif key_char == 'l':
+					Game.target_tile()
+
+				elif key_char == '<':
+					if Game.map.stairs.x == Game.player.x and Game.map.stairs.y == Game.player.y:
+						Game.next_level()
 
 				return 'didnt-take-turn'
 

@@ -1,9 +1,9 @@
 {
     "color": "cyan",
     "fighter": {
-        "hp" : 70,
+        "hp" : 80,
         "dexterity" : 8,
-        "accuracy" : 20,
+        "accuracy" : 22,
         "power" : 3,
         "xp" : 0
     }
