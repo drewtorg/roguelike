@@ -22,16 +22,17 @@ class Renderer:
 	CHARACTER_SCREEN_WIDTH = 30
 
 
-	libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+	# libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+	libtcod.console_set_custom_font('fonts/terminal8x12_gs_ro.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
 	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
 	libtcod.sys_set_fps(LIMIT_FPS)
 
 	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
 	panel = libtcod.console_new(SCREEN_WIDTH, PANEL_HEIGHT)
 
-	def __init__(self, map, player):
+	def __init__(self, map, player, messages=[]):
 		self.map = map
-		self.messages = []
+		self.messages = messages
 		self.player = player
 
 	def add_message(self, message, color):

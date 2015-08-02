@@ -22,7 +22,7 @@ class Game:
 
         _fighter_component = race_decoder.decode_race_fighter(race)
         _color = race_decoder.decode_race_color(race)
-        Game.player = Player(Game.map.origin[0], Game.map.origin[1], '@', 'Drew', _color, fighter_component=_fighter_component, race=race)
+        Game.player = Player(Game.map.origin[0], Game.map.origin[1], libtcod.CHAR_SMILIE, 'Drew', _color, fighter_component=_fighter_component, race=race)
         Game.map.add_object(Game.player)
 
         Game.renderer = Renderer(Game.map, Game.player)
@@ -147,7 +147,7 @@ class Game:
         Game.map.add_object(Game.player)
 
         Renderer.clear_console()
-        Game.renderer = Renderer(Game.map, Game.player)
+        Game.renderer.map = Game.map
 
     @staticmethod
     def check_level_up():
