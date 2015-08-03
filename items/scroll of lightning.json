@@ -3,5 +3,6 @@
     "char" : "#",
     "color" : "amber",
     "spawn_chance" : [[25, 4]],
-    "use_function" : "cast_lightning"
+    "use_function" : "cast_lightning",
+    "range" : 5
 }

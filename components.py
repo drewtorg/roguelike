@@ -5,13 +5,14 @@ import game
 CONFUSE_NUM_TURNS = 10
 
 class Fighter:
-	def __init__(self, hp, dexterity, accuracy, power, xp, death_function=None):
+	def __init__(self, hp, dexterity, accuracy, power, xp, range, death_function=None):
 		self.base_max_hp = hp
 		self.hp = hp
 		self.base_dexterity = dexterity
 		self.base_power = power
 		self.base_accuracy = accuracy
 		self.xp = xp
+		self.range = range
 		self.death_function = death_function
 
 	@property
@@ -99,7 +100,7 @@ class WanderingMonster:
 	def take_turn(self):
 		monster = self.owner
 
-		if monster.distance_to(game.Game.player) >= 2:
+		if monster.distance_to(game.Game.player) >= monster.fighter.range:
 			monster.try_move_towards(game.Game.player)
 
 		elif game.Game.player.fighter.hp > 0:
@@ -127,7 +128,7 @@ class ConfusedMonster:
 
 
 class Item:
-	def __init__(self, use_function=None):
+	def __init__(self, use_function=None, range=0):
 		self.use_function = use_function
 
 	def pick_up(self):

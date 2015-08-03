@@ -3,5 +3,6 @@
     "char" : "!",
     "color" : "violet",
     "spawn_chance" : [[35, 0]],
-    "use_function" : "cast_heal"
+    "use_function" : "cast_heal",
+    "range" : 0
 }

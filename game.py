@@ -22,7 +22,8 @@ class Game:
 
         _fighter_component = race_decoder.decode_race_fighter(race)
         _color = race_decoder.decode_race_color(race)
-        Game.player = Player(Game.map.origin[0], Game.map.origin[1], libtcod.CHAR_SMILIE, 'Drew', _color, fighter_component=_fighter_component, race=race)
+        Game.player = Player(Game.map.origin[0], Game.map.origin[1], libtcod.CHAR_SMILIE, 'Drew',
+            _color, fighter_component=_fighter_component, race=race)
         Game.map.add_object(Game.player)
 
         Game.renderer = Renderer(Game.map, Game.player)
@@ -225,7 +226,13 @@ class Game:
                 Game.map.fov_recompute = False
                 key_char = chr(Game.key.c)
 
-                if key_char == 'c':
+                if key_char == 'a':
+                    range = Game.player.get_range()
+                    monster = Game.target_monster(range)
+                    if monster is not None:
+                        Game.player.fighter.attack(monster)
+
+                elif key_char == 'c':
                     level_up_exp = Game.get_exp_to_level()
                     Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
                         '\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +

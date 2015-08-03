@@ -7,5 +7,6 @@
     "power_bonus" : 0,
     "dexterity_bonus" : 3,
     "max_hp_bonus" : 0,
-    "accuracy_bonus" : 0
+    "accuracy_bonus" : 0,
+    "range_bonus" : 0
 }

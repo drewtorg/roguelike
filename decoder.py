@@ -65,7 +65,7 @@ class EnemyDecoder(Decoder):
 
 		fighter_component = Components.Fighter(hp=enemy_dict['fighter']['hp'], dexterity=enemy_dict['fighter']['dexterity'],
 			accuracy=enemy_dict['fighter']['accuracy'], power=enemy_dict['fighter']['power'], xp=enemy_dict['fighter']['xp'],
-			death_function=vars(Components)[enemy_dict['death_function']])
+			death_function=vars(Components)[enemy_dict['death_function']], range=enemy_dict['fighter']['range'])
 
 		ai_component = vars(Components)[enemy_dict['ai']]()
 
@@ -82,7 +82,7 @@ class ItemDecoder(Decoder):
 		item_dict = Decoder.decode(self, file)
 
 		color = vars(libtcod)[item_dict['color']]
-		item_component = Components.Item(use_function=vars(Components)[item_dict['use_function']])
+		item_component = Components.Item(use_function=vars(Components)[item_dict['use_function']], range=item_dict['range'])
 		item = object.Object(x, y, item_dict['char'], item_dict['name'],
 			color=color, always_visible=True, item=item_component)
 		return item
@@ -96,7 +96,8 @@ class EquipmentDecoder(Decoder):
 
 		equipment_component = equipment.Equipment(slot=item_dict['slot'],
 			power_bonus=item_dict['power_bonus'], dexterity_bonus=item_dict['dexterity_bonus'],
-			max_hp_bonus=item_dict['max_hp_bonus'], accuracy_bonus=item_dict['accuracy_bonus'])
+			max_hp_bonus=item_dict['max_hp_bonus'], accuracy_bonus=item_dict['accuracy_bonus'],
+			range_bonus=item_dict['range_bonus'])
 
 		color = vars(libtcod)[item_dict['color']]
 		item = object.Object(x, y, item_dict['char'], item_dict['name'],
@@ -131,7 +132,8 @@ class RaceDecoder(Decoder):
 		race_dict = Decoder.decode(self, file)
 		fighter_dict = race_dict['fighter']
 		fighter = Components.Fighter(fighter_dict['hp'], fighter_dict['dexterity'],
-			fighter_dict['accuracy'], fighter_dict['power'], fighter_dict['xp'], Components.player_death)
+			fighter_dict['accuracy'], fighter_dict['power'], fighter_dict['xp'],
+			fighter_dict['range'], Components.player_death)
 		return fighter
 
 	def decode_race_color(self, file):

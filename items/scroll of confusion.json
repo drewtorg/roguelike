@@ -3,5 +3,6 @@
     "char" : "#",
     "color" : "amber",
     "spawn_chance" : [[10, 2]],
-    "use_function" : "cast_confuse"
+    "use_function" : "cast_confuse",
+    "range" : 5
 }

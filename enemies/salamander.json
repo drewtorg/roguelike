@@ -11,6 +11,7 @@
         "dexterity" : 10,
         "accuracy" : 20,
         "power" : 5,
-        "xp" : 60
+        "xp" : 60,
+        "range" : 2
     }
 }

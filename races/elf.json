@@ -5,6 +5,7 @@
         "dexterity" : 8,
         "accuracy" : 22,
         "power" : 3,
-        "xp" : 0
+        "xp" : 0,
+        "range" : 1.5
     }
 }
