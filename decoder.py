@@ -4,14 +4,15 @@ import equipment
 import object
 import json
 import glob
-from sys import platform as _platform
+import os
+# from sys import platform as _platform
 
 class Decoder:
 	def __init__(self, path):
 		self.path = path
 
 	def decode(self, file):
-		decodeFile = open(self.path + file + '.json')
+		decodeFile = open(os.path.join(self.path, file + '.json'))
 		decodeString = decodeFile.read()
 		return json.loads(decodeString, object_hook=self._decode_dict)
 
@@ -22,10 +23,7 @@ class Decoder:
 	def decode_all_spawn_chances(self):
 		spawn_chances = {}
 		for file in glob.glob(self.path + '/*.json'):
-			if _platform == 'win32':
-				fileName = file.split('\\')[-1]
-			else:
-				fileName = file.split('/')[-1]
+			fileName = os.path.split(file)[-1]
 			enemyName = fileName.split('.')[0]
 			spawn_chances[enemyName] = self.decode_spawn_chance(enemyName)
 		return spawn_chances
@@ -120,10 +118,7 @@ class RaceDecoder(Decoder):
 	def decode_all_races(self):
 		races = []
 		for file in glob.glob(self.path + '/*.json'):
-			if _platform == 'win32':
-				fileName = file.split('\\')[-1]
-			else:
-				fileName = file.split('/')[-1]
+			fileName = os.path.split(file)[-1]
 			race = fileName.split('.')[0]
 			races.append(race.title())
 		return races
