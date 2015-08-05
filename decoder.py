@@ -5,7 +5,6 @@ import object
 import json
 import glob
 import os
-# from sys import platform as _platform
 
 class Decoder:
 	def __init__(self, path):
