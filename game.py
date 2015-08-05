@@ -162,9 +162,9 @@ class Game:
             choice = None
             while choice is None:
                 choice = Renderer.menu('Level up! Choose a stat to raise:\n',
-                    ['Constitution (+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
-                    'Strength (+1 attack, from (' + str(Game.player.fighter.power) + ')',
-                    'Agility (+1 dexterity, from (' + str(Game.player.fighter.dexterity) + ')'], Renderer.LEVEL_SCREEN_WIDTH)
+                    ['+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
+                    '+1 attack, from (' + str(Game.player.fighter.power) + ')',
+                    '+1 dexterity, from (' + str(Game.player.fighter.dexterity) + ')'], Renderer.LEVEL_SCREEN_WIDTH)
 
             if choice == 0:
                 Game.player.fighter.base_max_hp += 20
@@ -173,7 +173,7 @@ class Game:
                 Game.player.fighter.base_power += 1
             elif choice == 2:
                 Game.player.fighter.base_dexterity += 1
-            renderer.render_all()
+            Game.renderer.render_all()
 
     @staticmethod
     def get_exp_to_level():

@@ -24,7 +24,7 @@ class Renderer:
 
 	# libtcod.console_set_custom_font('fonts/terminal8x12_gs_tc.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 	libtcod.console_set_custom_font('fonts/terminal8x12_gs_ro.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
-	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Rougelike', False)
+	libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, 'Roguelike', False)
 	libtcod.sys_set_fps(LIMIT_FPS)
 
 	main_console = libtcod.console_new(SCREEN_WIDTH, SCREEN_HEIGHT)
