@@ -1,0 +1,12 @@
+{
+    "name" : "dagger",
+    "char" : "-",
+    "color" : "cyan",
+    "slot" : "right hand",
+    "spawn_chance" : [[0, 0]],
+    "power_bonus" : 1,
+    "dexterity_bonus" : 1,
+    "max_hp_bonus" : 0,
+    "accuracy_bonus" : 0,
+    "range_bonus" : 0
+}

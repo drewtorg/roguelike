@@ -1,11 +1,12 @@
 {
-    "name": "Fighter",
-    "max_mp": 20,
-    "mp_regen": 0,
-    "abilities": [{
-        "name": "Heroic Strike",
-        "use_function": "heroic_strike",
-        "level": 1,
-        "cost": 5
+    "name" : "Fighter",
+    "max_mp" : 20,
+    "mp_regen" : 0,
+    "start_equipment" : "dagger",
+    "abilities" : [{
+        "name" : "Heroic Strike",
+        "use_function" : "heroic_strike",
+        "level" : 1,
+        "cost" : 5
     }]
 }

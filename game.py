@@ -24,8 +24,9 @@ class Game:
         _fighter_component = race_decoder.decode_race_fighter(race)
         _color = race_decoder.decode_race_color(race)
         _job = job_decoder.decode_job(job)
+        _start_equipment = job_decoder.decode_job_equipment(job)
         Game.player = Player(Game.map.origin[0], Game.map.origin[1], libtcod.CHAR_SMILIE, 'Drew',
-            _color, fighter_component=_fighter_component, race=race, job=_job)
+            _color, fighter_component=_fighter_component, race=race, job=_job, start_equipment=_start_equipment)
         Game.map.add_object(Game.player)
 
         Game.renderer = Renderer(Game.map, Game.player)
@@ -90,7 +91,7 @@ class Game:
                 job = Renderer.menu('Pick a job', jobs, 15, 0)
                 if job is None:
                     continue
-                    
+
                 Game.new_game(races[race].lower(), jobs[job].lower())
                 Game.run()
             elif choice == 1:
@@ -156,7 +157,7 @@ class Game:
     @staticmethod
     def next_level():
         Game.message('You take a moment to rest, and recover your strength.', libtcod.light_violet)
-        Game.player.fighter.heal(Game.player.fighter.max_hp / 2)
+        Game.player.fighter.heal(.5)
 
         Game.message('You descend deeper into the heart of the dungeon...', libtcod.red)
         Game.dungeon_level += 1

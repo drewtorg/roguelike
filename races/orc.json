@@ -1,6 +1,6 @@
 {
-    "color": "desaturated_green",
-    "fighter": {
+    "color" : "desaturated_green",
+    "fighter" : {
         "hp" : 130,
         "dexterity" : 2,
         "accuracy" : 18,

@@ -89,7 +89,7 @@ class EquipmentDecoder(Decoder):
 	def __init__(self, path):
 		Decoder.__init__(self, path)
 
-	def decode_equipment(self, file, x, y):
+	def decode_equipment(self, file, x=0, y=0):
 		item_dict = Decoder.decode(self, file)
 
 		equipment_component = equipment.Equipment(slot=item_dict['slot'],
@@ -153,6 +153,12 @@ class JobDecoder(Decoder):
 		for i in range(0, len(job_dict['abilities'])):
 			ability = job_dict['abilities'][i]
 			ability['use_function'] = vars(abilities)[ability['use_function']]
-			
+
 		job = Components.Job(job_dict['name'], job_dict['abilities'], job_dict['max_mp'], job_dict['mp_regen'])
 		return job
+
+	def decode_job_equipment(self, file):
+		job_dict = Decoder.decode(self, file)
+
+		equipment_decoder = EquipmentDecoder('equipment/')
+		return equipment_decoder.decode_equipment(job_dict['start_equipment'])

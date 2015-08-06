@@ -1,6 +1,6 @@
 {
-    "color": "cyan",
-    "fighter": {
+    "color" : "cyan",
+    "fighter" : {
         "hp" : 80,
         "dexterity" : 8,
         "accuracy" : 22,

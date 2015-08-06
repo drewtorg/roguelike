@@ -2,7 +2,7 @@
     "name" : "bow",
     "char" : ")",
     "color" : "sepia",
-    "spawn_chance" : [[0, 1]],
+    "spawn_chance" : [[0, 0]],
     "slot" : "right hand",
     "power_bonus" : 1,
     "dexterity_bonus" : 0,

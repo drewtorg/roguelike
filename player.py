@@ -1,11 +1,14 @@
 from object import Object
 
 class Player(Object):
-    def __init__(self, x, y, char, name, color, fighter_component, race, job):
-        self.inventory = []
+    def __init__(self, x, y, char, name, color, fighter_component, race, job, start_equipment=None):
         self.level = 1
         self.job = job
         self.race = race
+        self.inventory = []
+        if start_equipment is not None:
+            self.inventory.append(start_equipment)
+            start_equipment.equipment.is_equipped = True
 
         Object.__init__(self, x, y, char, name, color, blocks=True, fighter=fighter_component, race=race)
 
