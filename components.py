@@ -2,7 +2,7 @@ import libtcodpy as libtcod
 import game
 
 ############################## BASIC COMPONENTS ###############################
-CONFUSE_NUM_TURNS = 10
+CONFUSE_NUM_TURNS = 6
 
 class Fighter:
 	def __init__(self, hp, dexterity, accuracy, power, xp, range, death_function=None):
@@ -61,8 +61,8 @@ class Fighter:
 		else:
 			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' and misses!')
 
-	def heal(self, amount):
-		self.hp += amount
+	def heal(self, percent):
+		self.hp += int(percent * self.max_hp)
 		if self.hp > self.max_hp:
 			self.hp = self.max_hp
 
@@ -119,12 +119,31 @@ class ConfusedMonster:
 		monster = self.owner
 
 		if self.num_turns > 0:
-			monster.wander()
 			self.num_turns -= 1
 
 		else:
 			monster.ai = self.old_ai
 			game.Game.message('The ' + self.owner.name + ' is no longer confused!', libtcod.red)
+
+
+class Job:
+	def __init__(self, name, abilities, max_mp, mp_regen):
+		self.name = name
+		self.abilities = abilities
+		self.mp = max_mp
+		self.max_mp = max_mp
+		self.mp_regen = mp_regen
+
+	def update(self):
+		self.mp = min(self.mp + self.mp_regen, self.max_mp)
+
+	def has_max_mp(self):
+		return self.max_mp == self.mp
+
+	def regen_mana(self, percent):
+		self.mp += int(percent * self.max_mp)
+		if self.mp > self.max_mp:
+			self.mp = self.max_mp
 
 
 class Item:
@@ -133,7 +152,7 @@ class Item:
 
 	def pick_up(self):
 		if len(game.Game.player.inventory) >= 26:
-			game.Game.message('Your inventory is full, cannot pick up ' + 'self.owner.name' + '.', libtcod.red)
+			game.Game.message('Your inventory is full, cannot pick up ' + self.owner.name + '.', libtcod.red)
 		else:
 			game.Game.player.inventory.append(self.owner)
 			game.Game.map.remove_object(self.owner)
@@ -165,7 +184,8 @@ class Item:
 				game.Game.player.inventory.remove(self.owner)
 
 ################################# ITEM FUNCTIONS ###############################
-HEAL_AMOUNT = 40
+HEAL_AMOUNT = .3
+REGEN_AMOUNT = .5
 LIGHTNING_RANGE = 5
 LIGHTNING_DAMAGE = 40
 CONFUSE_RANGE = 8
@@ -178,6 +198,19 @@ def cast_heal():
 		return 'cancelled'
 	game.Game.message('Your wounds start to feel better!', libtcod.light_violet)
 	game.Game.player.fighter.heal(HEAL_AMOUNT)
+
+def cast_restore():
+	health = cast_heal()
+	mana = cast_regen_mana()
+	if health == 'cancelled' and mana == 'cancelled':
+		return 'cancelled'
+
+def cast_regen_mana():
+	if game.Game.player.job.has_max_mp():
+		game.Game.message('You are already at full mana.', libtcod.red)
+		return 'cancelled'
+	game.Game.message('You feel invigorated!', libtcod.light_violet)
+	game.Game.player.job.regen_mana(REGEN_AMOUNT)
 
 def cast_lightning():
 	monster = game.Game.map.closest_monster(LIGHTNING_RANGE)

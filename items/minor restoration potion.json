@@ -1,0 +1,8 @@
+{
+    "name" : "minor restoration potion",
+    "char" : 235,
+    "color" : "light_violet",
+    "spawn_chance" : [[35, 0]],
+    "use_function" : "cast_restore",
+    "range" : 0
+}

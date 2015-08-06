@@ -1,0 +1,8 @@
+{
+    "name" : "minor mana potion",
+    "char" : 235,
+    "color" : "light_blue",
+    "spawn_chance" : [[35, 0]],
+    "use_function" : "cast_regen_mana",
+    "range" : 0
+}

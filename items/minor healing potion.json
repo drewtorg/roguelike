@@ -1,7 +1,7 @@
 {
     "name" : "minor healing potion",
     "char" : 235,
-    "color" : "light_violet",
+    "color" : "light_red",
     "spawn_chance" : [[35, 0]],
     "use_function" : "cast_heal",
     "range" : 0

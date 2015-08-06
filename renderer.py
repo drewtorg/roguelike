@@ -55,7 +55,7 @@ class Renderer:
 		libtcod.console_clear(Renderer.main_console)
 
 	@staticmethod
-	def menu(header, options, width, transparency=.07):
+	def menu(header, options, width, transparency=.7):
 		if header == '':
 			header_height = 0
 
@@ -143,7 +143,8 @@ class Renderer:
 
 		self.render_messages()
 		self.render_bar(1, 1, Renderer.BAR_WIDTH, 'HP', self.player.fighter.hp, self.player.fighter.max_hp, libtcod.light_red, libtcod.dark_red)
-		libtcod.console_print_ex(Renderer.panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level ' + str(game.Game.dungeon_level))
+		self.render_bar(1, 3, Renderer.BAR_WIDTH, 'MP', self.player.job.mp, self.player.job.max_mp, libtcod.light_blue, libtcod.dark_blue)
+		libtcod.console_print_ex(Renderer.panel, 1, 5, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level ' + str(game.Game.dungeon_level))
 
 
 	def render_all_objects(self):

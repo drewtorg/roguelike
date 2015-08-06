@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 import components as Components
+import abilities
 import equipment
 import object
 import json
@@ -22,9 +23,9 @@ class Decoder:
 	def decode_all_spawn_chances(self):
 		spawn_chances = {}
 		for file in glob.glob(self.path + '/*.json'):
-			fileName = os.path.split(file)[-1]
-			enemyName = fileName.split('.')[0]
-			spawn_chances[enemyName] = self.decode_spawn_chance(enemyName)
+			file_name = os.path.split(file)[-1]
+			enemy_name = file_name.split('.')[0]
+			spawn_chances[enemy_name] = self.decode_spawn_chance(enemy_name)
 		return spawn_chances
 
 	def _decode_list(self, data):
@@ -117,8 +118,8 @@ class RaceDecoder(Decoder):
 	def decode_all_races(self):
 		races = []
 		for file in glob.glob(self.path + '/*.json'):
-			fileName = os.path.split(file)[-1]
-			race = fileName.split('.')[0]
+			file_name = os.path.split(file)[-1]
+			race = file_name.split('.')[0]
 			races.append(race.title())
 		return races
 
@@ -133,3 +134,25 @@ class RaceDecoder(Decoder):
 	def decode_race_color(self, file):
 		race_dict = Decoder.decode(self, file)
 		return vars(libtcod)[race_dict['color']]
+
+class JobDecoder(Decoder):
+	def __init__(self, path):
+		Decoder.__init__(self, path)
+
+	def decode_all_jobs(self):
+		jobs = []
+		for file in glob.glob(self.path + '/*.json'):
+			file_name = os.path.split(file)[-1]
+			job_name = file_name.split('.')[0]
+			jobs.append(job_name.title())
+		return jobs
+
+	def decode_job(self, file):
+		job_dict = Decoder.decode(self, file)
+		#convert function strings to actual functions
+		for i in range(0, len(job_dict['abilities'])):
+			ability = job_dict['abilities'][i]
+			ability['use_function'] = vars(abilities)[ability['use_function']]
+			
+		job = Components.Job(job_dict['name'], job_dict['abilities'], job_dict['max_mp'], job_dict['mp_regen'])
+		return job

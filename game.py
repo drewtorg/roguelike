@@ -5,6 +5,7 @@ from player import Player
 from renderer import Renderer
 
 race_decoder = decoder.RaceDecoder('races/')
+job_decoder = decoder.JobDecoder('jobs/')
 
 class Game:
     LEVEL_UP_BASE = 200
@@ -13,7 +14,7 @@ class Game:
     MAP_HEIGHT = 43
 
     @staticmethod
-    def new_game(race):
+    def new_game(race, job):
         Game.state = 'playing'
         Game.dungeon_level = 1
         Game.mouse = libtcod.Mouse()
@@ -22,8 +23,9 @@ class Game:
 
         _fighter_component = race_decoder.decode_race_fighter(race)
         _color = race_decoder.decode_race_color(race)
+        _job = job_decoder.decode_job(job)
         Game.player = Player(Game.map.origin[0], Game.map.origin[1], libtcod.CHAR_SMILIE, 'Drew',
-            _color, fighter_component=_fighter_component, race=race)
+            _color, fighter_component=_fighter_component, race=race, job=_job)
         Game.map.add_object(Game.player)
 
         Game.renderer = Renderer(Game.map, Game.player)
@@ -53,27 +55,43 @@ class Game:
         return Game.player.inventory[index].item
 
     @staticmethod
+    def job_menu(header):
+        options = []
+        abilities = [ability for ability in Game.player.job.abilities if ability['level'] <= Game.player.level]
+        for ability in abilities:
+            text = ability['name'] + ' (' + str(ability['cost']) + ')'
+            options.append(text)
+
+        index = Renderer.menu(header, options, Renderer.INVENTORY_WIDTH)
+        if index is None:
+            return None
+        return Game.player.job.abilities[index]
+
+    @staticmethod
     def main_menu():
         img = libtcod.image_load('img/menu_background1.png')
 
         while not libtcod.console_is_window_closed():
             Renderer.render_main_screen(img)
 
-            choice = Renderer.menu('', ['Play a new game', 'Continue current game', 'Quit'], 24)
+            choice = Renderer.menu('', ['Play a new game', 'Continue current game', 'Quit'], 24, 0)
 
             if choice == 0:
                 Renderer.render_main_screen(img)
 
                 races = race_decoder.decode_all_races()
-                race = Renderer.menu('Pick a race', races, 15)
+                race = Renderer.menu('Pick a race', races, 15, 0)
                 if race is None:
                     continue
 
-                # Renderer.render_main_screen(img)
-                #
-                # classes = class_decoder.decode_all_classes()
-                # class = Renderer.menu('Pick a class', classes, 15)
-                Game.new_game(races[race].lower())
+                Renderer.render_main_screen(img)
+
+                jobs = job_decoder.decode_all_jobs()
+                job = Renderer.menu('Pick a job', jobs, 15, 0)
+                if job is None:
+                    continue
+                    
+                Game.new_game(races[race].lower(), jobs[job].lower())
                 Game.run()
             elif choice == 1:
                 try:
@@ -251,6 +269,13 @@ class Game:
                     chosen_item = Game.inventory_menu('Press the key next to an item to use it.\n')
                     if chosen_item is not None:
                         chosen_item.use()
+                        return 'used-item'
+
+                elif key_char == 'j':
+                    ability = Game.job_menu("Press the key next to an ability to use it.\n")
+                    if ability is not None:
+                        Game.player.use_ability(ability)
+                        return 'used-ability'
 
                 elif key_char == 'l':
                     Game.target_tile()
