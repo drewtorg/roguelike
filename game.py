@@ -182,6 +182,7 @@ class Game:
             while choice is None:
                 choice = Renderer.menu('Level up! Choose a stat to raise:\n',
                     ['+20 HP, from (' + str(Game.player.fighter.max_hp) + ')',
+                    '+10 MP, from (' + str(Game.player.job.max_mp) + ')',
                     '+1 attack, from (' + str(Game.player.fighter.power) + ')',
                     '+1 dexterity, from (' + str(Game.player.fighter.dexterity) + ')'], Renderer.LEVEL_SCREEN_WIDTH)
 
@@ -189,8 +190,11 @@ class Game:
                 Game.player.fighter.base_max_hp += 20
                 Game.player.fighter.hp += 20
             elif choice == 1:
-                Game.player.fighter.base_power += 1
+                Game.player.job.max_mp += 10
+                Game.player.job.mp += 10
             elif choice == 2:
+                Game.player.fighter.base_power += 1
+            elif choice == 3:
                 Game.player.fighter.base_dexterity += 1
             Game.renderer.render_all()
 
