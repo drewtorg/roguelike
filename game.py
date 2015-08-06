@@ -231,6 +231,7 @@ class Game:
                     monster = Game.target_monster(range)
                     if monster is not None:
                         Game.player.fighter.attack(monster)
+                        return 'attacked'
 
                 elif key_char == 'c':
                     level_up_exp = Game.get_exp_to_level()

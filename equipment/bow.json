@@ -1,0 +1,12 @@
+{
+    "name" : "bow",
+    "char" : ")",
+    "color" : "sepia",
+    "spawn_chance" : [[0, 1]],
+    "slot" : "right hand",
+    "power_bonus" : 1,
+    "dexterity_bonus" : 0,
+    "max_hp_bonus" : 0,
+    "accuracy_bonus" : 2,
+    "range_bonus" : 8
+}

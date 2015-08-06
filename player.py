@@ -11,5 +11,5 @@ class Player(Object):
         equipment = self.fighter.get_all_equipped()
         range = self.fighter.range
         for item in equipment:
-            range += item.range
+            range += item.range_bonus
         return range

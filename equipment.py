@@ -9,7 +9,7 @@ class Equipment:
         self.dexterity_bonus = dexterity_bonus
         self.max_hp_bonus = max_hp_bonus
         self.accuracy_bonus = accuracy_bonus
-        self.range_bonus = 0
+        self.range_bonus = range_bonus
 
     def toggle_equip(self):
         if self.is_equipped:
