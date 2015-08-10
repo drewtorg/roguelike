@@ -36,6 +36,7 @@ class Fighter:
 		return self.base_accuracy + bonus
 
 	def take_damage(self, damage):
+
 		if damage > 0:
 			self.hp -= damage
 
@@ -52,7 +53,6 @@ class Fighter:
 
 		if hit:
 			damage = libtcod.random_get_int(0, self.power/2, self.power)
-
 			if damage > 0:
 				game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' for ' + str(damage) + ' hit points.')
 				self.xp += target.fighter.take_damage(damage)
@@ -60,6 +60,7 @@ class Fighter:
 				game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' but it has no effect!')
 		else:
 			game.Game.message(self.owner.name.capitalize() + ' attacks ' + target.name + ' and misses!')
+
 
 	def heal(self, percent):
 		self.hp += int(percent * self.max_hp)

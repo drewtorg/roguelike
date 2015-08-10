@@ -150,6 +150,16 @@ class Game:
                     return obj
 
     @staticmethod
+    def target_all_neighbors(x, y, max_range=1):
+        monsters = []
+        for i in range(int(x - max_range), int(x + max_range + 1)):
+            for j in range(int(y - max_range) ,int(y + max_range + 1)):
+                obj = Game.map.object_at(i, j)
+                if obj is not None and obj.fighter and not obj == Game.player:
+                    monsters.append(obj)
+        return monsters
+
+    @staticmethod
     def update():
         for object in Game.map.objects:
             object.update()

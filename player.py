@@ -24,5 +24,7 @@ class Player(Object):
 
     def use_ability(self, ability):
         if ability['cost'] <= self.job.mp:
-            ability['use_function']()
-            self.job.mp -= ability['cost'] + self.job.mp_regen
+            result = ability['use_function'](self)
+            
+            if result != 'cancelled':
+                self.job.mp -= ability['cost'] + self.job.mp_regen

@@ -35,7 +35,7 @@ class Object:
 
 	def __str__(self):
 		newStr = 'Name: ' + self.name + '\n'
-		newStr += 'Char: ' + self.char + '\n'
+		newStr += 'Char: ' + str(self.char) + '\n'
 		newStr += 'Location: ' + '(' + str(self.x) + ', ' + str(self.y) + ')\n'
 		newStr += 'Color: ' + str(self.color) + '\n'
 		return newStr;

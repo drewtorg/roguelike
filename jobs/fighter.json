@@ -8,5 +8,10 @@
         "use_function" : "heroic_strike",
         "level" : 1,
         "cost" : 5
+    },{
+        "name" : "Bladestorm",
+        "use_function" : "bladestorm",
+        "level" : 1,
+        "cost" : 10
     }]
 }
