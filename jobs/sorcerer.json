@@ -1,0 +1,17 @@
+{
+    "name" : "Sorcerer",
+    "max_mp" : 40,
+    "mp_regen" : 0.1,
+    "start_equipment" : "wand",
+    "abilities" : [{
+        "name" : "Shocking Grasp",
+        "use_function" : "shocking_grasp",
+        "level" : 1,
+        "cost" : 5
+    },{
+        "name" : "Cone of Cold",
+        "use_function" : "cone_of_cold",
+        "level" : 1,
+        "cost" : 7
+    }]
+}

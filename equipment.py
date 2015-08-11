@@ -2,7 +2,7 @@ import game
 import libtcodpy as libtcod
 
 class Equipment:
-    def __init__(self, slot, power_bonus=0, dexterity_bonus=0, max_hp_bonus=0, accuracy_bonus=0, range_bonus=0):
+    def __init__(self, slot, power_bonus=0, dexterity_bonus=0, max_hp_bonus=0, accuracy_bonus=0, range_bonus=0, max_mp_bonus=0, mp_regen_bonus=0):
         self.slot = slot
         self.is_equipped = False
         self.power_bonus = power_bonus
@@ -10,6 +10,8 @@ class Equipment:
         self.max_hp_bonus = max_hp_bonus
         self.accuracy_bonus = accuracy_bonus
         self.range_bonus = range_bonus
+        self.max_mp_bonus = max_mp_bonus
+        self.mp_regen_bonus = mp_regen_bonus
 
     def toggle_equip(self):
         if self.is_equipped:
@@ -23,12 +25,16 @@ class Equipment:
             old_equipment.dequip()
 
         self.is_equipped = True
+        game.Game.player.fighter.hp += self.max_hp_bonus
+        game.Game.player.job.mp += self.max_mp_bonus
         game.Game.message('Equipped ' + self.owner.name + ' on ' + self.slot + '.', libtcod.light_green)
 
     def dequip(self):
         if not self.is_equipped:
             return
         self.is_equipped = False
+        game.Game.player.fighter.hp -= self.max_hp_bonus
+        game.Game.player.job.mp -= self.max_mp_bonus
         game.Game.message('Dequipped ' + self.owner.name + ' on ' + self.slot + '.', libtcod.light_yellow)
 
     def get_equipped_in_slot(self, slot):

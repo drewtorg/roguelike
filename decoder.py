@@ -95,7 +95,8 @@ class EquipmentDecoder(Decoder):
 		equipment_component = equipment.Equipment(slot=item_dict['slot'],
 			power_bonus=item_dict['power_bonus'], dexterity_bonus=item_dict['dexterity_bonus'],
 			max_hp_bonus=item_dict['max_hp_bonus'], accuracy_bonus=item_dict['accuracy_bonus'],
-			range_bonus=item_dict['range_bonus'])
+			range_bonus=item_dict['range_bonus'], max_mp_bonus=item_dict['max_mp_bonus'],
+			mp_regen_bonus=item_dict['mp_regen_bonus'])
 
 		color = vars(libtcod)[item_dict['color']]
 		item = object.Object(x, y, item_dict['char'], item_dict['name'],

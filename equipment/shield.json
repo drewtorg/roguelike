@@ -8,5 +8,7 @@
     "dexterity_bonus" : 3,
     "max_hp_bonus" : 0,
     "accuracy_bonus" : 0,
-    "range_bonus" : 0
+    "range_bonus" : 0,
+    "max_mp_bonus" : 0,
+    "mp_regen_bonus" : 0
 }

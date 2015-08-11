@@ -72,11 +72,7 @@ class Fighter:
 
 	def get_all_equipped(self):
 		if self.owner == game.Game.player:
-			equipped_list = []
-			for item in game.Game.player.inventory:
-				if item.equipment and item.equipment.is_equipped:
-					equipped_list.append(item.equipment)
-			return equipped_list
+			return self.owner.get_all_equipped()
 		else:
 			return []
 
@@ -132,8 +128,8 @@ class Job:
 		self.name = name
 		self.abilities = abilities
 		self.mp = max_mp
-		self.max_mp = max_mp
-		self.mp_regen = mp_regen
+		self.base_max_mp = max_mp
+		self.base_mp_regen = mp_regen
 
 	def update(self):
 		self.mp = min(self.mp + self.mp_regen, self.max_mp)
@@ -145,6 +141,16 @@ class Job:
 		self.mp += int(percent * self.max_mp)
 		if self.mp > self.max_mp:
 			self.mp = self.max_mp
+
+	@property
+	def max_mp(self):
+		bonus = sum(equipment.max_mp_bonus for equipment in game.Game.player.get_all_equipped())
+		return self.base_max_mp + bonus
+
+	@property
+	def mp_regen(self):
+		bonus = sum(equipment.mp_regen_bonus for equipment in game.Game.player.get_all_equipped())
+		return self.base_mp_regen + bonus
 
 
 class Item:

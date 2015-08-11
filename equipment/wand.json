@@ -1,0 +1,14 @@
+{
+    "name" : "wand",
+    "char" : 244,
+    "color" : "sepia",
+    "spawn_chance" : [[0, 0]],
+    "slot" : "right hand",
+    "power_bonus" : 0,
+    "dexterity_bonus" : 0,
+    "max_hp_bonus" : 5,
+    "accuracy_bonus" : 0,
+    "range_bonus" : 1.5,
+    "max_mp_bonus" : 10,
+    "mp_regen_bonus" : 0
+}

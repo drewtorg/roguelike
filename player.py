@@ -9,6 +9,8 @@ class Player(Object):
         if start_equipment is not None:
             self.inventory.append(start_equipment)
             start_equipment.equipment.is_equipped = True
+            fighter_component.hp += start_equipment.equipment.max_hp_bonus
+            self.job.mp += start_equipment.equipment.max_mp_bonus
 
         Object.__init__(self, x, y, char, name, color, blocks=True, fighter=fighter_component, race=race)
 
@@ -25,6 +27,13 @@ class Player(Object):
     def use_ability(self, ability):
         if ability['cost'] <= self.job.mp:
             result = ability['use_function'](self)
-            
+
             if result != 'cancelled':
                 self.job.mp -= ability['cost'] + self.job.mp_regen
+
+    def get_all_equipped(self):
+        equipped_list = []
+        for item in self.inventory:
+            if item.equipment and item.equipment.is_equipped:
+                equipped_list.append(item.equipment)
+        return equipped_list

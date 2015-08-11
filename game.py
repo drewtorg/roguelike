@@ -168,6 +168,7 @@ class Game:
     def next_level():
         Game.message('You take a moment to rest, and recover your strength.', libtcod.light_violet)
         Game.player.fighter.heal(.5)
+        Game.player.job.regen_mana(.5)
 
         Game.message('You descend deeper into the heart of the dungeon...', libtcod.red)
         Game.dungeon_level += 1
@@ -200,7 +201,7 @@ class Game:
                 Game.player.fighter.base_max_hp += 20
                 Game.player.fighter.hp += 20
             elif choice == 1:
-                Game.player.job.max_mp += 10
+                Game.player.job.base_max_mp += 10
                 Game.player.job.mp += 10
             elif choice == 2:
                 Game.player.fighter.base_power += 1
@@ -270,6 +271,7 @@ class Game:
                     level_up_exp = Game.get_exp_to_level()
                     Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
                         '\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +
+                        '\nMaximum MP: ' + str(Game.player.job.max_mp) + 'Mp Regen ' + str(Game.player.job.mp_regen) +
                         '\nAttack: ' + str(Game.player.fighter.power) + '\nDexterity: ' + str(Game.player.fighter.dexterity), Renderer.CHARACTER_SCREEN_WIDTH)
 
                 elif key_char == 'd':

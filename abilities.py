@@ -16,3 +16,9 @@ def bladestorm(player):
             player.fighter.attack(monster)
         return 'hit'
     return 'cancelled'
+
+def shocking_grasp(player):
+    print "shocking grasp"
+
+def cone_of_cold(payer):
+    print 'cone of cold'
