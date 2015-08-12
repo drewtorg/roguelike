@@ -95,7 +95,7 @@ class Renderer:
 	def render_target_tile(self, box, x, y):
 		libtcod.console_blit(box, 0, 0, 1, 1, 0, x, y, 1.0, 0.6)
 		libtcod.console_flush()
-
+		
 	def render_names_under_target(self, x, y):
 		names = [obj.name.capitalize() for obj in self.map.objects
 			if obj.x == x and obj.y == y and self.map.is_in_fov(obj)]

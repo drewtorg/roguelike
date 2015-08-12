@@ -22,3 +22,9 @@ def shocking_grasp(player):
 
 def cone_of_cold(payer):
     print 'cone of cold'
+
+def concussive_shot(player):
+    print 'concussive shot'
+
+def poison_shot(player):
+    print 'poison shot'

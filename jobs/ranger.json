@@ -1,0 +1,17 @@
+{
+    "name" : "Ranger",
+    "max_mp" : 30,
+    "mp_regen" : 0,
+    "start_equipment" : "bow",
+    "abilities" : [{
+        "name" : "Concussive Shot",
+        "use_function" : "concussive_shot",
+        "level" : 1,
+        "cost" : 5
+    },{
+        "name" : "Poison Shot",
+        "use_function" : "poison_shot",
+        "level" : 1,
+        "cost" : 7
+    }]
+}
