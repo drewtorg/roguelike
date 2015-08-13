@@ -1,0 +1,16 @@
+[{
+    "word" : "bear",
+    "bonuses" : [{
+        "stat" : "power_bonus",
+        "amount" : 2
+    }]
+},{
+    "word" : "tiger",
+    "bonuses" : [{
+        "stat" : "power_bonus",
+        "amount" : 2
+    },{
+        "stat" : "dexterity_bonus",
+        "amount" : 2
+    }]
+}]

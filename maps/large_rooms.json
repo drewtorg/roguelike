@@ -1,7 +1,6 @@
 {
     "MAX_ROOM_MONSTERS" : [[5, 1], [8, 3], [12, 6]],
 	"MAX_ROOM_ITEMS" : [[1, 1], [2, 4]],
-	"EQUIPMENT_DROP_CHANCE" : 75,
 	"ROOM_MIN_SIZE" : 10,
 	"ROOM_MAX_SIZE" : 20,
 	"MAX_EQUIPMENT" : 3,

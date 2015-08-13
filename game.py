@@ -271,8 +271,8 @@ class Game:
                     level_up_exp = Game.get_exp_to_level()
                     Game.msgbox('Character Information\n\nLevel: ' + str(Game.player.level) + '\nExperience: ' + str(Game.player.fighter.xp) +
                         '\nExperience to level up: ' + str(level_up_exp) + '\n\nMaximum HP: ' + str(Game.player.fighter.max_hp) +
-                        '\nMaximum MP: ' + str(Game.player.job.max_mp) + 'Mp Regen ' + str(Game.player.job.mp_regen) +
-                        '\nAttack: ' + str(Game.player.fighter.power) + '\nDexterity: ' + str(Game.player.fighter.dexterity), Renderer.CHARACTER_SCREEN_WIDTH)
+                        '\nMaximum MP: ' + str(Game.player.job.max_mp) + '\nMp Regen ' + str(Game.player.job.mp_regen) + '/sec' +
+                        '\n\nAttack: ' + str(Game.player.fighter.power) + '\nDexterity: ' + str(Game.player.fighter.dexterity), Renderer.CHARACTER_SCREEN_WIDTH)
 
                 elif key_char == 'd':
                     chosen_item = Game.inventory_menu('Press the key next to an item to drop it.\n')

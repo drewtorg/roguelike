@@ -10,5 +10,5 @@
     "accuracy_bonus" : 0,
     "range_bonus" : 1.5,
     "max_mp_bonus" : 10,
-    "mp_regen_bonus" : 0
+    "mp_regen_bonus" : 0.1
 }

@@ -1,7 +1,7 @@
 {
     "name" : "Sorcerer",
     "max_mp" : 40,
-    "mp_regen" : 0.1,
+    "mp_regen" : 0,
     "start_equipment" : "wand",
     "abilities" : [{
         "name" : "Shocking Grasp",

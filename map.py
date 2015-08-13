@@ -19,7 +19,6 @@ class Map:
 
 	MAX_ROOM_MONSTERS =			 map_dict['MAX_ROOM_MONSTERS']
 	MAX_ROOM_ITEMS =			 map_dict['MAX_ROOM_ITEMS']
-	EQUIPMENT_DROP_CHANCE =		 map_dict['EQUIPMENT_DROP_CHANCE']
 	ROOM_MIN_SIZE =				 map_dict['ROOM_MIN_SIZE']
 	ROOM_MAX_SIZE =				 map_dict['ROOM_MAX_SIZE']
 	MAX_EQUIPMENT =				 map_dict['MAX_EQUIPMENT']
@@ -35,6 +34,7 @@ class Map:
 		self.height = height
 		self.width = width
 		self.objects = []
+		self.rooms = []
 		self.monster_chances = {}
 		self.item_chances = {}
 		self.equipment_count = 0
@@ -115,6 +115,8 @@ class Map:
 		self.stairs = Object(new_x, new_y, '<', 'stairs', libtcod.white, always_visible=True)
 		self.objects.append(self.stairs)
 		self.send_to_back(self.stairs)
+		self.rooms = rooms
+		self.place_equipment()
 
 	def place_objects(self, room):
 		num_monsters = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_MONSTERS))
@@ -122,9 +124,6 @@ class Map:
 
 		num_items = libtcod.random_get_int(0, 0, from_dungeon_level(Map.MAX_ROOM_ITEMS))
 		self.place_items(room, num_items)
-
-		equipment_chance = libtcod.random_get_int(0, 0, 100)
-		self.place_equipment(room, equipment_chance)
 
 	def place_items(self, room, num_items):
 		for i in range(num_items):
@@ -147,8 +146,11 @@ class Map:
 				monster = enemy_decoder.decode_enemy(choice, x, y)
 				self.add_object(monster)
 
-	def place_equipment(self, room, equipment_chance):
-		if equipment_chance > Map.EQUIPMENT_DROP_CHANCE and self.equipment_count < Map.MAX_EQUIPMENT:
+	def place_equipment(self):
+		for i in range(0, Map.MAX_EQUIPMENT):
+			index = libtcod.random_get_int(0, 0, len(self.rooms) - 1)
+			room = self.rooms[index]
+
 			x = libtcod.random_get_int(0, room.x1 + 1, room.x2 - 1)
 			y = libtcod.random_get_int(0, room.y1 + 1, room.y2 - 1)
 

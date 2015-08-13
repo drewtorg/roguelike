@@ -103,6 +103,17 @@ class EquipmentDecoder(Decoder):
 			color=color, always_visible=True, equipment=equipment_component)
 		return item
 
+class ModifierDecoder(Decoder):
+	def __init__(self, path):
+		Decoder.__init__(self, path)
+
+	def decode_prefixes(self):
+		return Decoder.decode(self, 'prefixes')
+
+	def decode_postfixes(self):
+		return Decoder.decode(self, 'postfixes')
+
+
 class MapDecoder(Decoder):
 	def __init__(self, path):
 		Decoder.__init__(self, path)

@@ -30,6 +30,7 @@ class Object:
 		self.equipment = equipment
 		if self.equipment:
 			self.equipment.owner = self
+			self.equipment.reassign_name()
 			self.item = Components.Item()
 			self.item.owner = self
 
