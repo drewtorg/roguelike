@@ -68,8 +68,9 @@ class Equipment:
         return None
 
     def add_stats(self, modifier):
-        for mod in modifier['bonuses']:
-            vars(self)[mod['stat']] += mod['amount']
+        if modifier is not None:
+            for mod in modifier['bonuses']:
+                vars(self)[mod['stat']] += mod['amount']
 
     def reassign_name(self):
         if self.prefix is not None:
